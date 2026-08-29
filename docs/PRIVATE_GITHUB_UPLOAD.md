@@ -24,6 +24,22 @@ Open a new PowerShell window, then authenticate:
 gh auth login
 ```
 
+If the same PowerShell window still says that `gh` is not recognized, either
+close and reopen PowerShell or refresh that window's PATH before continuing:
+
+```powershell
+$env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
+  [Environment]::GetEnvironmentVariable('Path', 'User')
+gh --version
+gh auth login
+```
+
+You can also bypass PATH lookup and invoke the installed executable directly:
+
+```powershell
+& 'C:\Program Files\GitHub CLI\gh.exe' auth login
+```
+
 Choose GitHub.com, HTTPS, and browser authentication when prompted.
 
 ## 2. Create the local commit
