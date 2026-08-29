@@ -36,7 +36,7 @@ and store writable files on the HDD. See
   multiplayer address-book input through the PS3 on-screen keyboard.
 - 48 kHz stereo game audio and optional Ogg music tracks.
 - Optional HDMI 720p frame-packed stereoscopic 3D and top-and-bottom output.
-- Optional PlayStation Move wand aiming with PlayStation Eye calibration and
+- (WIP) Optional PlayStation Move wand aiming with PlayStation Eye calibration and
   inertial fallback; a Navigation controller remains on the gamepad path.
 - Optional SPU frame acceleration and selectable CRT/scanline-style filters.
 - XMB-configured output plus 720p and 1080p video choices.
