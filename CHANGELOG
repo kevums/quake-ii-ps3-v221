@@ -1,0 +1,2091 @@
+Quake II PS3 update:
+- v2.37 is a ready rollback for the v2.36 one-object raster-state experiment.
+  It copies the exact v2.21/v2.35 EBOOT.BIN under higher 02.37 metadata so a
+  physical console can recover immediately if v2.36 loses visible output.
+  Install it only as a rollback; no code is compiled, relinked, or resigned and
+  no configuration or game data is included. No RPCS3 test is used.
+- v2.36 is the first performance experiment on the v2.21 hardware-video
+  baseline. Of 138 retained objects, exactly one changes: `rsx_gl.o` is the
+  isolated v2.24 backend object that filters redundant viewport and scissor
+  methods only after converting requests to their actual physical target
+  rectangles. It leaves v2.21's video selection, display buffers, GL1 camera
+  and UI objects, stereo overlay, input, sound, networking, OSK, gameplay, and
+  font path byte-identical. USB input, the post-v2.21 stereo-blend override, and
+  the scene-scale bridge are intentionally not linked. This is a serial-built,
+  update-only physical test and is not tested with RPCS3.
+- v2.35 establishes the new physical-hardware compatibility baseline after the
+  owner confirmed that v2.21 still renders and plays correctly while v2.32,
+  forced-720p v2.33, and the byte-identical-v2.27 v2.34 recovery remain black
+  with live audio/input. It copies v2.21's accepted EBOOT.BIN byte-for-byte and
+  raises only PARAM.SFO to 02.35. Nothing is rebuilt, relinked, or resigned, and
+  no autoexec, configuration, game data, save, or other installed file is
+  included. All future performance experiments branch from this executable and
+  change one independently auditable object at a time. No RPCS3 test is used.
+- v2.34 is a metadata-only executable bisect after v2.33 remained black while
+  audio and blind menu input continued under forced 720p with archived stereo
+  disabled. It copies the complete, previously accepted v2.27 EBOOT.BIN
+  byte-for-byte and raises only PARAM.SFO to 02.34 so it can install over newer
+  recovery attempts. Nothing is compiled, relinked, signed again, or mixed from
+  another renderer line. This removes v2.33's safe-video object as well as the
+  v2.28/v2.32 tiled scene-resolve delta. The package contains no autoexec,
+  configuration, game data, saves, or other installed files and is not tested
+  with RPCS3.
+- v2.33 is a visible-output recovery update for the physical-console case where
+  v2.32 remains alive (audio and blind menu input work) but produces a black
+  screen. It restores the complete physically accepted v2.27 linked-object
+  baseline, then changes only its PS3 video object to reuse the previously
+  successful v2.03 recovery selector: request standard 1280x720 output, disable
+  archived stereoscopic output for that launch, and fall back to the current XMB
+  mode only when 720p is unavailable. The v2.04 RGBW diagnostic framebuffer is
+  deliberately not enabled because that separate experiment exited to XMB on
+  hardware. No autoexec, config, game data, saves, or other installed files are
+  included. This is an update-only physical recovery package, serial-built with
+  the original GCC 7.2.0/PSL1GHT toolchain and not tested with RPCS3.
+- v2.32 resumes from the original computer's exact v2.28 two-object tiled
+  scene-resolve line after the returned-machine v2.29-v2.31 reconstructions
+  failed physical startup or load. The private scene remains a full-pitch
+  linear allocation and the destination remains the established tiled display
+  eye; compact allocations, private tiling/Z-cull, target-aware policy changes,
+  startup commands, and configuration payloads are not imported. The one code
+  change conservatively retires the private color-target producer before the
+  tiled render-target-to-texture resolve. This establishes a hardware-safe
+  first test of v2.28's strongest fill-rate lever before attempting to remove
+  synchronization. Linear output and every unrelated v2.28 object are
+  byte-identical. The update contains only PARAM.SFO and USRDIR/EBOOT.BIN, was
+  built with the original GCC 7.2.0/PSL1GHT toolchain, and is not tested with
+  RPCS3.
+- v2.28 extends the adaptive scene-resolution bridge to effective tiled and
+  tiled-plus-Z-cull display targets. The reduced scene remains in a private
+  linear RSX color/depth allocation, then one ordinary fixed-shader quad
+  samples it into the restored tiled eye before native-resolution HUD/UI work.
+  This avoids the tile-incompatible 2D transfer destination which previously
+  forced those modes back to full-resolution scene shading. Linear output
+  retains v2.27's accepted scale-engine path. `ps3_rsx_scene_tiled_resolve 0`
+  is a session-only recovery switch, and `ps3_rsx_scene_sync 2` adds a
+  conservative pre-resolve idle diagnostic. The Makefile now applies the
+  bridge's two required object-symbol rewrites as part of their compile rules,
+  preventing a source rebuild from silently disabling display-surface
+  tracking. Only the native RSX backend and scene bridge changed; GL1, stereo
+  blend, UI, online/OSK, input, sound, gameplay, and the direct native path are
+  preserved. This is an update-only package and is not tested in RPCS3.
+- v2.27 removes the redundant pre-blit RSX idle drain from the adaptive scene
+  resolve. The conservative post-blit 2D-to-3D barrier remains enabled, and
+  `ps3_rsx_scene_sync 2` restores both barriers for recovery testing. Mode 0
+  is an explicit FIFO-only diagnostic. The accepted direct renderer is
+  unaffected when scene scaling is disabled.
+- v2.26 adds bounded physical-cadence feedback to v2.25's scene resolver. With
+  `ps3_rsx_scene_scale 0` and `ps3_rsx_scene_adaptive 1`, Custom starts at
+  native scene resolution, 720p Performance starts at 75%, and 1080p Quality
+  starts at two-thirds. Two consecutive gameplay cadences above 40 ms prove
+  that presentation has fallen from the 33.3 ms target to the 50 ms VBlank
+  tier; the scene then steps down through 87.5%, 75%, 66.7%, 58.3%, and 50%
+  bounds as applicable. It never oscillates quality upward during a gameplay
+  session. Explicit scene scales remain deterministic and disable adaptation,
+  while `ps3_rsx_scene_adaptive 0` retains the fixed profile defaults. UI and
+  scanout resolution, stereo routing, allocation/tiled/z-trick fallbacks, and
+  every accepted v2.25 object are unchanged. This is an update-only package
+  and is not tested in RPCS3.
+- v2.25 adds a scene-resolution path with enough fill-rate leverage to move a
+  20 FPS 720p workload back toward the 33.3 ms presentation budget. The 720p
+  Performance profile now renders only the 3D refdef at 75% linear dimensions
+  (normally 960x540) in a private RSX color/depth surface, resolves it with the
+  hardware scale engine into the unchanged 1280x720 eye, and then draws HUD,
+  menus, console, text, OSK and display filters at native output resolution.
+  The 1080p Quality profile uses a two-thirds scene scale (approximately
+  1280x720) while Custom remains native by default. `ps3_rsx_scene_scale 0`
+  selects this profile-aware policy; explicit values from 0.50 through 1.00
+  override it live, and 1.00 disables the path. The bridge wraps the accepted
+  v2.24 exports instead of recompiling its GL1 frontend. Allocation failure,
+  tiled targets, and legacy z-trick automatically retain the proven direct
+  renderer. Stereo eyes have independent clears and resolves, while the v2.23
+  blend correction, USB input, online/OSK behavior, sound and gameplay remain
+  unchanged. This is an update-only package and is not tested in RPCS3.
+- v2.24 keeps the accepted v2.23 executable and its corrected frame-packed
+  color blend, then restores only the independently cleared v1.99 native RSX
+  raster-state optimization. Viewport and scissor requests are compared after
+  conversion to their actual physical target rectangles, so repeated mono and
+  same-eye methods are omitted while every real frame-packed/top-bottom eye
+  transition is still emitted. The earlier physical one-object bisect located
+  v1.99's rendering regression in the separate GL1 camera-matrix object; that
+  object remains on the proven v1.98 baseline here. UI transforms and text,
+  menus, lighting, filters, input, networking, sound and gameplay are otherwise
+  byte-for-byte v2.23. This is an update-only package and is not tested in
+  RPCS3.
+- v2.23 corrects the v2.22 stereo-blend integration after physical frame-packed
+  output proved the first eye was still running the legacy opaque overlay. The
+  preserved v2.20 GL1 object had inlined R_Flash into RI_RenderFrame and called
+  a private R_PolyBlend helper directly, bypassing v2.22's public replacement.
+  The single PPC64 REL24 call site now resolves to the stereo-safe active-eye
+  2D overlay, whose standard alpha blend is therefore actually executed for
+  underwater, damage and power-up tints. USB keyboard/mouse support and every
+  other v2.22 object are unchanged. This is an update-only package and is not
+  tested in RPCS3.
+- v2.22 keeps the accepted v2.20 executable baseline and adds two isolated PS3
+  compatibility bridges. Native USB keyboards now provide bindable raw-key
+  events plus layout-aware console, menu, chat and multiplayer text entry;
+  native USB mice provide five buttons, wheel input and Quake mouse-look using
+  the existing sensitivity, filtering, freelook and strafe settings. Both are
+  optional, hot-pluggable and suppressed while the system OSK owns input. The
+  underwater, damage and power-up color blend is now a deterministic 2D quad
+  in the active stereo eye with an explicit alpha blend function, replacing
+  the inherited perspective-space overlay that could saturate the left eye.
+  Pad, Move, online/OSK, sound, gameplay and renderer objects otherwise remain
+  on the proven baseline. v2.21's ineffective per-draw font sampler diagnostic
+  is intentionally omitted while v2.20's low-cost atlas setup is retained.
+  This is an update-only package and is not tested in RPCS3.
+- v2.21 is a ready fallback for the v2.20 scaled-font test and is intended only
+  if v2.20 still shows corrupted 2x/3x text. It retains v2.20's two-object
+  nearest-atlas fix and additionally reasserts nearest sampling after binding
+  `conchars` for each native string or individual glyph draw. The native RSX
+  state filter discards already-current sampler writes, limiting the normal
+  cost to the frontend checks. No renderer geometry, transforms, video, input,
+  sound, networking, gameplay, or OSK behavior changes; all non-font objects
+  remain byte-for-byte v2.19. This is an update-only package and is not tested
+  in RPCS3.
+- v2.20 keeps the physically proven v2.19 executable baseline and changes only
+  the two GL1 font-sampler objects. Physical v2.19 capture confirms that the
+  console and menu font is clean at 1x UI scale but becomes internally doubled
+  and smeared as UI scale increases. The tightly packed `pics/conchars.pcx`
+  atlas now uses nearest filtering when it is loaded and is kept on nearest
+  filtering after later texture-mode changes, preventing adjacent glyph cells
+  from bleeding into scaled characters. Renderer geometry, video transforms,
+  input, sound, networking, gameplay, the working multiplayer OSK persistence,
+  and all other objects remain byte-for-byte v2.19. This is an update-only
+  package and is not tested in RPCS3.
+- v2.19 abandons the post-v1.98 renderer experiment and restores the exact
+  physically proven v1.98 object baseline. The RSX renderer, GL1 frontend,
+  video handoff, input, sound, networking, gameplay, and every other object are
+  byte-for-byte v1.98. The sole replacement is the menu object containing the
+  multiplayer address-book completion: an accepted native PS3 OSK result is
+  copied into its `adr#` cvar, marked archived, and written to configuration
+  immediately; leaving the address book with the controller also commits all
+  fields before Refresh reads and pings them. The existing v1.98 asynchronous
+  system OSK and URL keyboard remain otherwise unchanged. This is an
+  update-only package and is not tested in RPCS3.
+- v2.18 removes the native UI's dependence on retained projection constants.
+  Physical v2.17 testing isolated two different transforms: the initial menu
+  was upright but still clipped by the old small canvas, while the same menu
+  became correctly positioned but vertically inverted after a world frame.
+  Native console, menu, HUD, text, and filter vertices now convert Quake's
+  top-left y-down coordinates directly to RSX clip space and use an identity
+  shader matrix. This makes the 2D transform deterministic at initial boot and
+  after every 3D-to-2D transition without changing the world projection or the
+  generic compatibility glOrtho path. The package is update-only and is not
+  tested in RPCS3.
+- v2.17 corrects the native 2D projection orientation exposed by v2.16's real
+  1920x1080 canvas. Physical output proved the console prompt submitted at
+  y=1045 appeared at the top of a 1080-line frame, while the main-menu artwork
+  was mirrored and displaced toward the bottom. The RSX viewport already
+  performs OpenGL's Y conversion, so the desktop-style y-down orthographic
+  matrix was applying a second inversion. Native console, menu, HUD, and filter
+  quads now use the complementary 2D projection; the 3D world projection and
+  the v2.16 native-resolution handoff are unchanged. The package is update-only
+  and is not tested in RPCS3.
+- v2.16 fixes the native renderer's PS3 video handoff after physical v2.15
+  testing proved both interleaved and planar immutable text streams produce the
+  same image with correct caller geometry. The trace exposed the actual fault:
+  a 1920x1080 RSX target was still using Yamagi's default 640x480 logical
+  canvas, so every 8x8 glyph was non-uniformly stretched to roughly 24x18
+  physical pixels and dense rows looked enlarged and overprinted. Native RSX
+  now gives the engine, UI projection, viewport, and scanout target identical
+  dimensions; stereoscopic output retains its required 1280x720 per-eye
+  canvas. This removes the ineffective low-resolution coordinate stretch--it
+  never reduced RSX fill cost--while preserving the update's existing native
+  renderer and planar glyph path. The package is update-only and is not tested
+  in RPCS3.
+- v2.15 moves native console, menu, HUD, and inventory glyphs from the generic
+  40-byte interleaved vertex format to separate tightly packed position, UV,
+  and color arrays in the existing flip-fenced GPU-local ring. This matches
+  PSL1GHT's physical debug-font renderer and directly removes the last
+  text-specific vertex-fetch variable after the caller-side row batching was
+  verified against upstream and old affected builds proved the corruption
+  predates that batching API. A one-shot hardware trace records the actual
+  glyph scale, virtual dimensions, viewport, and orthographic coefficients so
+  the next physical result can distinguish bad input geometry from RSX fetch
+  corruption. The package is update-only, contains three entries, and is not
+  tested in RPCS3.
+- v2.14 keeps v2.13's flip-fenced addressable glyph stream and adds the missing
+  installed-configuration migration revealed by its first physical result.
+  The long vertical immediate-command trails are gone, but v1.98's archived
+  1080p automatic `r_consolescale` now applies cleanly and makes the 8x8 font
+  enormous. PS3 console-scale revision 3 resets every existing update install
+  once to 1x, after which explicit user changes remain authoritative. The
+  focused build retains v2.13 byte-for-byte except for cl_screen.o, uses the
+  required strip -> `sprxlinker` -> NPDRM path, contains three update entries,
+  and is not tested in RPCS3.
+- v2.13 replaces the remaining high-volume command-inline glyph path with one
+  complete addressable triangle list per console, menu, HUD, or inventory
+  string. Physical v2.12 testing showed the same text corruption with the exact
+  v1.98 EBOOT, proving that v1.98 was a stable gameplay baseline rather than a
+  clean text baseline and invalidating the later camera-object attribution.
+  The vertical glyph trails match the one subsystem still capable of emitting
+  tens of thousands of immediate RSX method words during a full console redraw.
+  Text now uses the existing flip-fenced rotating GPU-local UI ring: every
+  string receives immutable, fresh-address vertices until the display fence,
+  and the command buffer carries one normal array draw rather than 42 method
+  words per glyph. The focused physical package retains every v1.98 object
+  byte-for-byte except rsx_gl.o, and keeps the established compatibility camera
+  matrix. It is update-only, contains three entries, and is not tested in
+  RPCS3.
+- v2.12 removes v1.99's direct camera-basis world-view matrix optimization
+  after the corrected v2.11 one-object physical bisect reproduced the enlarged,
+  overlapping and vertically streaked text with that object alone. The
+  renderer again constructs the view through the established GL matrix
+  operations and reads back the resulting compatibility matrix, exactly as in
+  the physically clean v1.98 build. The v1.99 resolved physical
+  viewport/scissor cache is exonerated by this bisect and remains eligible for
+  later performance builds. This immediate recovery package carries the exact
+  physically clean v1.98 EBOOT under 02.12 metadata so it cannot introduce an
+  untested source or link delta. It is update-only, contains three entries, and
+  is not tested in RPCS3.
+- v2.11 corrects the v2.10 package construction error without changing its
+  executable object set. v2.10 passed the raw top-level linker ELF directly to
+  `make_self_npdrm`, skipping PSL1GHT's required strip and `sprxlinker` pass;
+  that leaves invalid import-descriptor function counts and makes GameOS return
+  to XMB before `main`. This package signs the already stripped and sprxlinked
+  `build-rsx-v210/q2ps3.elf` instead. It remains the same focused visual bisect:
+  the physically clean v1.98 object baseline with only v1.99's direct
+  camera/world-view matrix `gl1_main.o`, while `rsx_gl.o` remains exactly v1.98.
+  It is an update-only three-entry physical test package and is not tested in
+  RPCS3.
+- v2.10 is the first one-object v1.99 visual-regression bisect. Its complete
+  object set comes from the physically clean v1.98 build except for v1.99's
+  gl1_main.o, which contains the direct camera/world-view matrix optimization;
+  rsx_gl.o remains exactly v1.98, so resolved physical viewport/scissor
+  filtering is absent. The build uses the restored legacy gem+SPURS/no-camera
+  library combination. Before replacing gl1_main.o, relinking the untouched
+  v1.98 objects produced a q2ps3.elf.map byte-for-byte identical to the original
+  v1.98 map, validating object order, addresses, archive selection, and imports.
+  Malformed text in v2.10 implicates the camera-matrix change; clean text
+  implicates v1.99's rsx_gl raster filtering instead. This is an update-only
+  three-entry physical bisect package and is not tested in RPCS3.
+- v2.09 is the exact v1.98 executable under higher update metadata. Physical
+  testing showed the same installation and configuration render normally on
+  v1.97 and v1.98, while the byte-identical v1.99 EBOOT repackaged as v2.08
+  boots but immediately produces enlarged, overlapping console glyphs. That
+  disproves the scale-only diagnosis and isolates the visual regression to the
+  two v1.99 object changes: direct camera-matrix construction in gl1_main and
+  resolved physical viewport/scissor filtering in rsx_gl. v2.09 compiles and
+  relinks nothing; its EBOOT.BIN is copied byte-for-byte from the physically
+  clean v1.98 update so the title can return to the last good visual baseline.
+  It is an update-only three-entry package and is not tested in RPCS3.
+- v2.08 is a byte-for-byte executable recovery package after both v2.06 and
+  v2.07 returned to XMB before `main`, regardless of whether the SELF included
+  or omitted the Move/Eye libraries. It reuses the exact EBOOT.BIN from the
+  physically boot-proven v2.05/v1.99 package without compiling or relinking a
+  single object; only the update metadata is raised to 02.08. This deliberately
+  withdraws the v2.06 console migration and all v2.00+ restoration changes so
+  the installed title can return to a known-working executable. It remains an
+  update-only three-entry package and is not tested in RPCS3.
+- v2.07 is the higher-version startup recovery after v2.06 returned directly
+  to XMB without creating a new boot trace, proving the process never reached
+  `main` and therefore never entered the restored v1.99 renderer. It keeps the
+  byte-identical v1.99 RSX object, v2.06's one-time 1x console migration, OSK,
+  and persistent address-book handling, but selects the link-time Move stub and
+  omits libgem, libcamera, and SPURS from the SELF. This isolates the pre-main
+  import failure while preserving the visible-renderer and configuration fixes.
+  PS Move tracking is intentionally unavailable in this recovery package. It is
+  update-only, serial-built, and not tested in RPCS3.
+- v2.06 returns to the physically boot-proven v1.99 RSX presentation object
+  while restoring v2.01's boot-quarantined PS Move/Eye implementation and
+  persistent multiplayer address-book handling around it. It deliberately
+  excludes v2.00's per-string Begin/End renderer change, which the v2.05 cold
+  bisect isolated as the black-output regression. A second one-time PS3 console
+  scale migration resets carried automatic or oversized values to 1x: at
+  1920x1080 Yamagi's automatic value is 3x, exactly explaining the full-width
+  80-character lines and enormous glyphs seen in the v2.05 hardware capture.
+  Future explicit scale changes remain persistent. This is an update-only
+  physical-console build; no RPCS3 run is used.
+- v2.05 is a physical cold-boot bisect package containing the exact untouched
+  v1.99 executable under higher install metadata. v1.50 boots after a console
+  reboot while v2.01 still produces black with only a DualShock 3 after the
+  same reboot, so this cleanly tests the boundary immediately before v2.00's
+  camera/Move, text-isolation and address-book changes. No objects are rebuilt
+  or mixed for this package. It is update-only and no RPCS3 run is used.
+- v2.04 adds a pre-renderer scanout diagnostic to the v2.03 recovery image.
+  Immediately after forced-720p video configuration it allocates and registers
+  a minimal linear framebuffer, fills it directly from the PPU with horizontal
+  red/green/blue/white bars, queues buffer zero through GCM, verifies flip
+  completion with a bounded wait, and holds the pattern for two seconds before
+  Quake initializes. This bypasses game shaders, textures, matrices, menus,
+  filters, batching and the normal frame scheduler, distinguishing a video/GCM
+  scanout failure from black content generated by the renderer. Move remains
+  link-time isolated. This is an update-only physical diagnostic build and no
+  RPCS3 run is used.
+- v2.03 is the true renderer recovery build. The v2.02 physical trace proves
+  that startup, 1080p video, RSX initialization, the main loop, menu submission
+  and the first queued frame all succeed, narrowing the remaining black output
+  to presentation changes introduced after the last physically proven v1.96.
+  This build pins the complete renderer/video/pacing object set to the exact
+  v1.96 binaries except for a recovery-only mode selector that forces standard
+  720p, disables archived stereo for that launch, and prevents the title/XMB
+  1080p state seen in the failing trace from being reused. It retains the
+  current boot-quarantined controller input and
+  persistent address-book menu objects, and keeps the link-time Move stub so
+  archived settings or attached hardware cannot enter GEM. The v1.97 exact-2D
+  projection cache and v1.99 raster/matrix cache are therefore absent. This is
+  an update-only physical recovery build and no RPCS3 run is used.
+- v2.02 is a boot-recovery and import-isolation build after physical hardware
+  showed that v2.00/v2.01 failed before `main` regardless of attached devices.
+  It retains the renderer/text and address-book changes, but selects a link-time
+  Move stub and omits libgem, libcamera and SPURS from the SELF entirely. This
+  provides a higher-version recovery update for installations already on v2.01
+  and tests the only new loader-level structural delta from the last bootable
+  images: the camera SPRX import. Move is deliberately unavailable in this one
+  recovery build. No RPCS3 run is used and the package remains update-only.
+- v2.01 quarantines libgem and libcamera from the boot path. An archived
+  `psmove_enable 1` can no longer initialize either module before the first
+  visible frame merely because a Move wand, Navigation controller, or Eye is
+  already connected; Move starts only from its in-menu enable/calibrate/reinit
+  actions or the matching console commands. This makes a direct v1.50-to-v2.01
+  update safe with devices attached. The GEM SPURS configuration is also
+  corrected from v2.00's single worker/single runnable workload to the five
+  workers and five priorities required by the working PSL1GHT samples. Those
+  resources exist only while Move is explicitly active and are released on
+  disable or shutdown. Physical-console validation remains required and no
+  RPCS3 run is used. This is an update-only release.
+- v2.00 replaces the PS3 port's inertial-only PS Move placeholder with a real
+  sphere-controller backend. It distinguishes the Move wand from the Navigation
+  controller through `gemGetInfo`, opens a PlayStation Eye in 640x480 RAW8 at
+  60 Hz, submits timestamped camera frames through `gemUpdateStart/Finish`,
+  selects a trackable hue, and uses the camera-corrected angular velocity with
+  raw gyro fallback when the sphere is temporarily hidden. The gamepad / Move
+  menu adds `calibrate / recenter PS Move`; its native alignment overlay reports
+  missing wand/Eye, color selection, calibration, lost tracking, and ready
+  states, and pressing MOVE starts calibration while the prompt is active.
+  `psmove_status`, `psmove_calibrate`, and `psmove_reinit` provide explicit
+  recovery and logging. Camera/container/module ownership is released on every
+  failure and normal shutdown, and GEM retains one application SPU.
+  Console/menu text now treats each string as an independent RSX Begin/End
+  primitive instead of retaining v1.96's stream across rows, and the tightly
+  packed `conchars` atlas is forced to nearest filtering both at load and after
+  later texture-mode changes. This intentionally gives correctness priority
+  over the small text-only draw-call saving. Address-book OSK acceptance now
+  commits the edited `adr#` cvar and configuration immediately; Circle/Select
+  also commits every field by checking the translated PS3 menu key, fixing the
+  old controller exit path that silently discarded entries before Refresh
+  could ping them. The native target serial-builds and links libcamera; physical
+  Move/Eye and text validation remain required. This is an update-only release;
+  no RPCS3 testing is used.
+- v1.99 removes the native camera-matrix rebuild from every rendered eye.
+  `R_SetupFrame` already computes the forward/right/up basis for frustum and
+  view work; the RSX path now writes the mathematically identical column-major
+  world-view matrix directly from that basis, eliminating a second set of five
+  trigonometric rotations, six generic 4x4 multiplies, and the compatibility
+  matrix readback. A 500,000-camera algebraic comparison stayed below
+  7.3e-12 absolute error, and a separate 250,000-case PS3-style Float32 sweep
+  over +/-8192-unit origins stayed below 7.8e-7 orientation and 0.0081-unit
+  translation error. The backend also caches resolved physical viewport and
+  scissor rectangles, so identical RSX raster methods are omitted while real
+  mono/stereo eye or depth-range changes still emit; a 500,000-transition
+  state simulation produced zero final-state mismatches. Statistics expose
+  these saves as `raster_hits`. The universal 30 FPS floor is now measured at
+  the real rounded 33,334 us budget rather than the former loose 34 ms proxy,
+  explicit/automatic 60 FPS is measured at 16,667 us rather than 20 ms, and
+  `floor_streak_max` reports consecutive floor misses. Old 20/34 ms fields
+  remain for comparison with archived logs. All changes operate beneath
+  Custom/720p/1080p, mono/stereo, filters, framebuffer layouts, quality
+  settings, and cap selection; no displayed settings profile is detected or
+  favored. v1.98's same-eye `ui_dupes` evidence remains active for the pending
+  physical stale-text diagnosis. This is an update-only physical-test release;
+  no RPCS3 testing is used.
+- v1.98 makes the remaining compatibility-lightmap pass sparse. World and
+  brush surfaces mark only the lightmap pages they actually occupy; static
+  blending and show-triangle diagnostics visit those pages in the same
+  ascending order, while their persistent heads are cleared sparsely at the
+  start of the next pass. A fully single-pass scene now skips the empty legacy
+  pass before changing depth, blend, texture, or dynamic-atlas state. This
+  removes the former 128-head clear, 127-page scan, and empty dynamic setup
+  from common frames without changing dynamic lightmaps, debug modes, page
+  ordering, or recovery after an interrupted pass. A 200,000-pass randomized
+  test covering 4,804,914 surface insertions found zero chain, ordering, or
+  stale-head mismatches. The sole native glyph path also gains stats-only,
+  per-eye exact-call signatures: `ps3_rsx_stats 1` reports `ui_dupes`, allowing
+  a physical log to distinguish duplicate console/menu submission from stale
+  presentation without suppressing legitimate draws or adding normal-play
+  hashing cost. A 10,000-eye simulation detected all 320,000 injected exact
+  duplicates with no changed-position false positives or hash collisions.
+  Both changes are independent of Custom/720p/1080p, mono/stereo, filters,
+  framebuffer layout, quality, and frame cap. This is an update-only
+  physical-test release; no RPCS3 testing is used.
+- v1.97 replaces the repeated native LoadIdentity/Ortho/LoadIdentity sequence
+  at frame start, post-world 2D setup, and display-filter resolve with one
+  exact 2D projection setup. The new path builds the same standard Quake II
+  matrix, selects the same UI stream, leaves GL_MODELVIEW selected, and copies
+  the final projection and identity modelview directly while advancing matrix
+  state once instead of as many as three times. When those exact matrices are
+  already resident and state filtering is enabled, the matrix operation is a
+  complete no-op; `ps3_rsx_stats 1` exposes those saves as `ortho_hits`.
+  Disabling the state filter still forces the non-cached diagnostic behavior.
+  Float-bit comparison across 320x240, 640x480, 1280x720, 1920x1080,
+  1280x1470, and 250,000 randomized dimensions found zero differences after
+  canonicalizing the mathematically equivalent negative-zero depth term.
+  The saving is renderer-wide across Custom/720p/1080p, mono/stereo, every
+  filter, both framebuffer layouts, all quality settings, and either frame
+  cap; filters receive additional hits naturally but no profile is detected
+  or favored. This is an update-only physical-test release; no RPCS3 testing
+  is used.
+- v1.96 coalesces adjacent command-inline console rows, menu labels, HUD text,
+  and ordinary 2D layers into one bounded RSX triangle stream whenever shader,
+  matrix, sampler, texture, and fixed state remain unchanged. Texture/program
+  transitions, matrices, viewport/scissor, clears, stream switches, filters,
+  stereo-eye changes, frame end, generic draw preparation, finishes, and
+  normal shutdown all close the stream before emitting another RSX method.
+  Every append reserves its eventual STOP in advance; command-buffer rollover
+  closes before invoking the callback, and a 16,384-vertex ceiling bounds any
+  one Begin/End sequence. This both reduces hardware draws for text-heavy
+  screens and makes a run of rows one explicitly ordered primitive stream.
+  `ps3_rsx_stats 1` adds `ui_batches` and `ui_merges` beside v1.95's
+  `ui_state_hits`. A deterministic 248,201-append stress pass produced 145,262
+  safe merges and 91,608 buffer rollovers with no callback inside Begin/End,
+  lost STOP reservation, or partition mismatch. The same code operates across
+  Custom/720p/1080p, mono/stereo, every filter, both framebuffer layouts, and
+  all quality settings; it neither detects nor tunes for a favorite profile.
+  This is an update-only physical-test release; no RPCS3 testing is used.
+- v1.95 avoids rebuilding the complete native draw-preparation stack between
+  adjacent console/menu strings and ordinary 2D layers when the generic
+  shader, matrix revision, sampler, and texture cache are already resident.
+  The shortcut is deliberately exact: initialized/acquired-frame state, the
+  generic (non-lightmap/non-filter) program, bound programs, a current MVP,
+  and clean sampler/cache state must all agree; every other combination takes
+  the established full preparation path. Texture-sample hazard tracking still
+  advances on each accepted hit. `ps3_rsx_stats 1` now reports
+  `ui_state_hits`, allowing a physical trace to measure the saved preparation
+  calls. A complete 512-state predicate sweep admitted only the one fully
+  prepared state and rejected all 511 mutations. This optimization is common
+  to Custom/720p/1080p, mono/stereo, all filters, both framebuffer layouts,
+  and every quality setting; it does not target or select a preferred profile.
+  v1.94's command-inline rectangles and v1.93's text/lifetime corrections
+  remain intact. This is an update-only physical-test release; no RPCS3
+  resources were used.
+- v1.94 removes the final mixed lifetime from ordinary console/menu
+  composition. Console backgrounds, menu pictures and bars, HUD icons, solid
+  fills, fades, tiled borders, cinematics, and the per-eye display-filter quad
+  now emit the same explicit command-buffer triangles as v1.93's glyphs.
+  Consequently a safe inline text row can no longer be composited over a stale
+  addressable 2D window generation, and filter-enabled profiles avoid their
+  former per-eye vertex write/stage/fetch path. Each rectangle removes 240
+  bytes of addressable vertex traffic and carries the same exact runtime
+  command-length check. A 250,000-case randomized comparison preserved all six
+  positions and UVs, and direct command accounting proves the expected 51-word
+  Begin/color/vertex/End sequence. Existing batch ordering is flushed before
+  each immediate rectangle, completely offscreen rectangles remain rejected,
+  and v1.93's acquired-frame guard, one-pass glyph classification, Z-cull
+  depth-allocation correction, and persistent lightmap heads remain active.
+  This applies to Custom/720p/1080p, mono/stereo, filter-off and every filter,
+  either framebuffer layout, and all quality settings; no preferred profile
+  is selected or assumed. This is an update-only physical-test release; no
+  RPCS3 resources were used.
+- v1.93 hardens the one native console/menu text route against stale-frame
+  submission. Direct textured quads and glyph strings now reject work unless
+  an acquired render surface is both active and writable, preventing a menu or
+  loading callback from appending commands after that surface was queued for
+  scanout. Each bounded string chunk classifies and stages every visible glyph
+  exactly once, then emits explicit command-inline triangles from that stable
+  set; the physical build also checks the exact RSX command-word delta once per
+  chunk and traces any invariant failure. A 20,000-string randomized test
+  staged 1,772,331 glyphs with zero sequence or command-size mismatches.
+  Tiled/Z-cull targets now allocate depth to Z-cull's 64-row registration
+  extent rather than the tile allocator's smaller 32-row extent, fixing the
+  under-allocation at 480p and 720p which did not occur accidentally at the
+  frame-packed 1470-row height. Color buffers retain the smaller valid tiled
+  extent. World material batching also replaces its per-pass 1 KiB automatic
+  lightmap-head clear with zero-on-consume persistent heads and one-time abort
+  recovery. These corrections and reductions are common renderer work: they
+  neither select nor assume a preferred resolution, stereo mode, filter,
+  framebuffer layout, or quality setting. The explicit 30 FPS mode retains
+  v1.92's full 33.3 ms render-ahead budget; physical statistics remain the
+  acceptance test for workloads that genuinely exceed it. This is an
+  update-only physical-test release; no RPCS3 resources were used.
+- v1.92 repairs the exact 60-to-30 Hz presentation schedule for every visual
+  configuration. The prior divider consumed its second VBlank before input,
+  simulation, command generation, and rendering, so a nominal 33.3 ms frame
+  still had only about 16.7 ms of useful work time before its flip deadline.
+  The completed prior flip now starts the next frame immediately. At EndFrame,
+  completed commands are flushed so RSX can work during the intermediate
+  VBlank; only the following flip command waits for that queue boundary. FIFO
+  ordering still prevents presentation before rendering completes, XMB callback
+  checks and the 50 ms recovery bound remain active, and the 60 FPS, VSync-off,
+  timedemo, 50 Hz, and non-divisible-cap paths are unchanged. A deterministic
+  501-point timing sweep found zero target misses from 16.7 through 33.3 ms with
+  the new schedule versus a miss at every such point with the old schedule;
+  work above 33.3 ms remains a real miss. Activation depends only on selecting
+  the 30 FPS cap on a reported 58--61 Hz display, so Custom/720p/1080p,
+  mono/stereo, every filter, framebuffer layout, and quality choice receive the
+  same end-to-end two-VBlank budget. v1.88's sole command-inline text path and
+  v1.89--v1.91's prepared topology/material reductions remain active. This is
+  an update-only physical-test release; no RPCS3 resources were used.
+- v1.91 moves immutable BSP material facts out of the visible-surface loop.
+  Each face records its lightstyle count and combined-lightmap geometry
+  eligibility while the map is loaded; rendering therefore compares only live
+  lightstyle values and no longer rechecks fixed polygon, lightmap-range,
+  turbulent, and flowing conditions every eye and frame. Fullbright,
+  lightmap-debug, saturation, world-light-data, animated-image alpha,
+  translucency, and dynamic-light decisions remain live. The global conditions
+  are evaluated once for the complete world texture-chain pass rather than once
+  per visible surface. A two-million-case predicate and style-terminator sweep
+  found zero old/new decision mismatches. The reduction applies to all output
+  resolutions, mono/stereo modes, filters, framebuffer layouts, and quality
+  choices. v1.88's sole command-inline text route plus v1.89/v1.90 prepared
+  alias/BSP topology remain active. This is an update-only physical-test
+  release; no RPCS3 resources were used.
+- v1.90 removes the corresponding per-frame fan-index construction from the
+  dominant static BSP path. Opaque lightmapped world polygons now append their
+  exact absolute 16-bit triangle list to the map hunk when their persistent
+  local-RSX vertices are registered. Each visible surface copies that prepared
+  list into the compatible material batch instead of executing three indexed
+  stores per triangle every eye and frame; dynamic lightmaps, flowing/warped or
+  alpha surfaces, arena overflow, and disabled static-world diagnostics retain
+  the established streamed path. Hunk sizing includes the new map-lifetime
+  data exactly. A one-million-case test covering 3,071,210,712 randomized fan
+  indices found zero sequence or range mismatches. Because the saving precedes
+  rasterization, it applies to Custom/720p/1080p, mono/stereo, every display
+  filter, framebuffer layout, and quality selection. v1.88's sole inline text
+  renderer and v1.89's prepared MD2 topology remain unchanged. This is an
+  update-only physical-test release; no RPCS3 resources were used.
+- v1.89 moves the remaining animated-model index construction out of gameplay.
+  The MD2 loader now flattens each validated immutable fan/strip sequence into
+  its exact 16-bit triangle winding once. Normal models and projected shadows
+  reserve one indexed RSX block, pack each prepared UV reference once, and add
+  only the current batch base to the stored indices. This eliminates repeated
+  per-primitive reservations and fan/strip index decoding for every visible
+  monster, item, player, weapon, and shadow. Models too large for one 16-bit
+  domain retain the verified v1.88 per-primitive path. A 250,000-case test
+  covering 1,749,176 randomized fans/strips and 334,453,752 emitted indices
+  found zero winding or batch-base mismatches. The optimization precedes
+  rasterization and therefore covers Custom/720p/1080p, mono/stereo, every
+  display filter, framebuffer layout, and quality selection. v1.88's sole
+  command-buffer-inline text path remains unchanged. This is an update-only
+  physical-test release; no RPCS3 resources were used.
+- v1.88 removes the remaining two-pass animated-model submission and the last
+  selectable stale-text fallback. GL1 now computes one lit color per unique
+  MD2 source vertex and sends the v1.87 prepared strip/fan topology,
+  interpolated float4 positions, and compact corner records directly to the
+  RSX packer. It no longer expands position/UV/color into nine temporary
+  floats per corner for the backend to read and repack. Projected shadows are
+  likewise calculated once per unique source vertex. A paired stereo eye
+  retains compact source colors and projected positions rather than complete
+  expanded command streams, reducing arena pressure while preserving exact
+  animation, normal lighting, texture seams, fan/strip winding, alpha, shells,
+  shadow projection, draw order, indexed/expanded batching, and state. New
+  `alias_sources`/`alias_refs` fields quantify the avoided corner expansion in
+  each PPU-stage statistics block. Separately, command-buffer-inline explicit
+  triangles are now the only native console/menu glyph implementation; the
+  addressable vertex-arena comparison path and its cvar switch are removed, so
+  an installed diagnostic config cannot re-enable the known stale/duplicated
+  green/white text route. A 200,000-case, 25,622,032-corner fan/strip and
+  projected-shadow equivalence test found zero mapping or numeric mismatches.
+  These changes apply to Custom/720p/1080p, mono/stereo, every filter,
+  framebuffer layout, and quality selection. This is an update-only
+  physical-test release; no RPCS3 resources were used.
+- v1.87 prepares each MD2 model's immutable strip/fan topology once while the
+  model is loaded. Visible monsters, items, weapons, and their projected
+  shadows now iterate compact native primitive and corner records instead of
+  reparsing the packed, byte-swapped file-format GL command stream on every
+  rendered entity. Primitive order and type, corner texture coordinates,
+  source-vertex indices, interpolated animation, per-frame normal lighting,
+  shells, alpha, projected shadows, batching, and paired-eye reuse are
+  unchanged. The loader validates the command extent, terminator, per-command
+  count, and every source index before publishing the topology, and the cache
+  is owned by the existing model hunk rather than allocating during gameplay.
+  This is a PPU reduction before rasterization and applies equally to Custom,
+  720p, 1080p, mono/stereo, every filter, framebuffer layout, and quality
+  selection; it is not tuned to one displayed settings profile. v1.86's final
+  atomic popup/text route and zero-mask BSP bypass remain active. This is an
+  update-only physical-test release; no RPCS3 resources were used.
+- v1.86 closes the remaining non-atomic green/white menu route and removes the
+  residual overhead beneath fully enclosed BSP nodes. The legacy popup printer
+  now submits each complete line through the same explicit-triangle,
+  command-buffer-inline string path used by the console, qmenu, HUD,
+  inventory, chat, and loading text; it no longer starts a separate RSX
+  Begin/End sequence for every character. The shared string wrapper also trims
+  transparent trailing console cells before they enter the renderer, reducing
+  both visibility and emission scans without changing positions or erasure.
+  Separately, a hierarchical world-frustum mask of zero now bypasses the clip
+  helper for the complete enclosed descendant subtree instead of calling it
+  only to test four cleared bits. `world_clip_skips` preserves the same metric,
+  so v1.84/v1.86 statistics remain comparable. Both reductions apply without
+  selecting a preferred resolution, filter, framebuffer, quality, or stereo
+  format. v1.85 hardware-authoritative pacing remains active. This is an
+  update-only physical-test release; no RPCS3 resources were used.
+- v1.85 makes the verified PS3 presentation fence authoritative for native
+  refresh and exact 60-to-30 Hz pacing. The previous scheduler waited for the
+  flip/VBlank interval and then compared the resulting integer-microsecond
+  sample against the same interval expressed as a floating-point threshold.
+  A 16,666 us sample could consequently reject a completed 16,666.67 us 60 Hz
+  slot, or a 33,332 us sample could reject an exact two-VBlank 30 Hz slot,
+  delaying that frame after the hardware had already proved it ready. A
+  successfully completed fence now directly authorizes the render pass; first
+  frame, timeout, callback interruption, VSync-off, timedemo, 50 Hz/non-exact
+  30 Hz, and arbitrary non-divisible caps retain the bounded software path.
+  This cadence correction is independent of Custom/720p/1080p, filters,
+  framebuffer layout, quality, and mono/stereo. The exact-divisor prewait also
+  no longer reports success after its counter timeout. v1.84 hierarchical BSP
+  clipping and v1.83 deterministic explicit-triangle text remain active. This
+  is an update-only physical-test release; no RPCS3 resources were used.
+- v1.84 makes world frustum culling hierarchical. The old traversal tested all
+  four frustum planes against every PVS-visible BSP node. Each node now carries
+  only the planes crossed by its parent; once the parent's negative support
+  corner is in front of a plane, that bit is removed for the complete enclosed
+  subtree. The positive support corner and strict outside comparison are
+  unchanged, preserving exact rejection and surface visibility. A 500,000-case
+  randomized equivalence/containment test produced zero outside mismatches and
+  zero invalid inherited-plane eliminations. `ps3_rsx_stats 1` now reports
+  `world_clip_tests` and `world_clip_skips`; the latter counts node/plane pairs
+  avoided specifically by inheritance. This PPU reduction applies to every
+  output resolution, filter, framebuffer layout, quality option, and both eyes
+  of stereo. v1.83's explicit-triangle text and v1.82's final-light cache remain
+  active. This is an update-only physical-test release; no RPCS3 resources
+  were used.
+- v1.83 removes the last hardware primitive-assembly ambiguity from green/white
+  console, menu, HUD, inventory, chat, loading, and cursor text. Every glyph is
+  now six explicit `TRIANGLES` vertices embedded directly in the ordered RSX
+  command buffer; no GPU-addressable vertex/index allocation exists and RSX is
+  no longer asked to decompose adjacent immediate-mode quads. Each TEX0/POS
+  vertex consumes exactly seven words, while begin, string-wide color, and end
+  consume nine, so the 128-glyph bound reserves exactly 5,385 command words—the
+  same maximum reservation size as the prior 192-quad chunk. API telemetry now
+  counts the actual six vertices. Archived text revision 2 forces this path
+  once on update installs even if an earlier diagnostic config selected the
+  addressable fallback. v1.82's final-light cache, v1.81's typed model/shadow
+  path, and all universal pacing/renderer optimizations remain active. This is
+  an update-only physical-test release; no RPCS3 resources were used.
+- v1.82 extends the stationary BSP light-point cache through the final entity
+  lighting result. When an entity remains at the same origin, the sampled
+  surface, map registration, relevant lightstyle RGB values, `r_modulate`, and
+  the complete padding-free dynamic-light array must all match exactly before
+  reuse. A changed bit in any dynamic-light origin/color/intensity advances a
+  once-per-render-pass revision; moving entities, flickering styles, changing
+  maps, or modified lighting settings immediately execute the original sample,
+  distance, and accumulation path. Stable items and temporarily stationary
+  monsters consequently avoid repeated lightmap accumulation and as many as 32
+  vector-length calculations per frame. `ps3_rsx_stats 1` reports
+  `final_light_hits` so the physical-console benefit is directly measurable.
+  This CPU reduction precedes rasterization and applies to every resolution,
+  filter, framebuffer layout, quality selection, and mono/stereo mode. v1.81's
+  typed model/shadow submission and all deterministic-text work remain active.
+  This is an update-only physical-test release; no RPCS3 resources were used.
+- v1.81 gives animated alias models and their projected shadows a typed native
+  RSX submission path. The GL1 frontend already expands MD2 commands into
+  fixed float3 positions, float2 coordinates, and float4 colors; the backend
+  now packs those known streams directly instead of toggling retained client
+  arrays and repeating generic pointer, type, stride, alignment, and source
+  dispatch for every short fan or strip. Indexed/expanded batching, alternating
+  strip winding, per-vertex lighting, colored shells, alpha, depth, stencil,
+  and projected-shadow results are unchanged. The paired stereo eye uses the
+  same path for its cached model and shadow commands. This is a PPU submission
+  reduction shared by Custom/720p/1080p, mono/stereo, every filter,
+  framebuffer layout, and quality setting; it does not target one visual
+  preset. All v1.80 transforms, v1.79 culling, v1.78 deterministic text, and
+  earlier pacing work remain active. This is an update-only physical-test
+  release; no RPCS3 resources were used.
+- v1.80 filters identity transforms before they can revise native matrices or
+  split compatible geometry. `R_RotateForEntity` no longer calls translation
+  for a zero origin or any of its three rotations for a zero angle. The native
+  compatibility layer independently treats zero-angle rotations, zero
+  translations, and unit scales as no-ops for all remaining callers. Unit-axis
+  rotations, which cover Quake II's entity/view transforms, also bypass a
+  redundant square root and three divides. A typical yaw-only alias entity now
+  performs one rotation instead of three; an unrotated entity performs none.
+  Transform order and every non-identity matrix calculation are unchanged.
+  This CPU/batching reduction is independent of resolution, filtering,
+  framebuffer layout, and stereo, and retains all v1.79/v1.78 text, lighting,
+  culling, MD2, and pacing work. This is an update-only physical-test release;
+  no RPCS3 resources were used.
+- v1.79 replaces alias-model frustum culling's eight transformed corners and
+  thirty-two corner/plane dot products with the equivalent oriented-box
+  center/radius test. Normal play now transforms one center and projects three
+  half-axes onto each of four planes; zero-angle entities skip `AngleVectors`
+  entirely. A 0.01-world-unit conservative boundary prevents floating-point
+  false rejection, and the original eight world corners are constructed only
+  when the developer `gl_showbbox` visualization actually needs them. A
+  300,000-case randomized equivalence test found no false rejections, including
+  a second 300,000-case near-plane test. Moving, rotating, and two-frame alias
+  bounds retain their full union, and stereo still performs independent
+  per-eye plane decisions. This pre-raster CPU reduction applies to all output
+  modes and retains v1.78's text migration/light-query cache, v1.77's MD2
+  interpolation paths, and v1.76's exact 30 Hz divider. This is an update-only
+  physical-test release; no RPCS3 resources were used.
+- v1.78 makes the deterministic green/white text path authoritative on update
+  installs. A one-time archived revision now enables command-buffer inline
+  glyphs even when a retained diagnostic config value disabled them; manual
+  A/B testing can still turn the live switch off afterward. All console rows,
+  menu strings, HUD/layout text, inventory, chat/input, and isolated cursors
+  already converge on that path. This release also caches the successful BSP
+  surface/sample hit for stationary entity light queries. The expensive BSP
+  ray traversal is skipped when the entity slot, origin, and map registration
+  still match, while animated lightstyles, `r_modulate`, dynamic lights,
+  final model lighting, and the cached shadow plane are evaluated or restored
+  every frame. Moving entities and cache misses retain the original traversal.
+  The optimization precedes RSX rasterization and therefore applies to every
+  resolution, filter, stereo mode, and framebuffer layout. v1.77's MD2 paths
+  and v1.76's exact 30 Hz divider remain active. This is an update-only
+  physical-test release; no RPCS3 resources were used.
+- v1.77 removes mode-independent MD2 interpolation work from every renderer
+  configuration. Ordinary entities already carry identical interpolated
+  `origin` and `oldorigin` values, so their animation path no longer builds an
+  angle basis and transforms a zero movement delta for every visible model.
+  Exact-current-frame and repeated-frame models expand one vertex source
+  instead of evaluating both halves of a two-frame blend; moving
+  `RF_FRAMELERP` entities retain their local-space origin interpolation.
+  Animated blends, power-screen shells, model lighting, projected shadows,
+  stereo second-eye reuse, and final RSX submissions are unchanged. This CPU
+  reduction applies to Custom, 720p, 1080p, mono, stereo, every filter and
+  either framebuffer layout rather than targeting one visual preset. The
+  exact 30 Hz divider from v1.76 remains active. This is an update-only
+  physical-test release; no RPCS3 resources were used.
+- v1.76 phase-locks the selectable 30 FPS cap to an exact two-VBlank
+  presentation cadence on the PS3's normal 58--61 Hz output modes. After the
+  queued frame reaches one VBlank, the main thread now waits for the second
+  hardware VBlank with bounded 50-microsecond polling and regular sysutil exit
+  checks. This replaces hundreds of complete no-frame main-loop passes against
+  an independent software threshold, reducing PPU overhead and the timer phase
+  drift observed as slight motion jerk. The integer-microsecond scheduler uses
+  a floored threshold only after selecting that exact divider, avoiding the
+  33,333 versus 33,333.33 microsecond boundary miss. Sixty FPS, VSync-off,
+  timedemo, 50 Hz output, and non-divisible custom caps keep their established
+  behavior. A runtime trace confirms `exact 30 Hz hardware VBlank divisor
+  active`, while existing cadence telemetry remains the physical acceptance
+  gate. v1.75's atlas and universal upload cleanup are retained. This is an
+  update-only physical-test release; no RPCS3 resources were used.
+- v1.75 gives the second stereoscopic eye an independent 64 KiB dynamic
+  lightmap atlas in the lightmap namespace slot which successful map loading
+  already leaves unused. Eye two can therefore perform its first atlas update
+  in place instead of renaming and copying eye one's sampled allocation. Atlas
+  packing, visibility, uploads, dynamic lighting, filtering, and draws remain
+  independent, and mono continues to use only the original atlas. Every dynamic
+  atlas upload also stops repeating an already-current texture bind and two
+  immutable filter calls, reducing PPU submission work in mono and stereo. Set
+  `ps3_rsx_stereo_lightmap_atlas 0` for a live stereo A/B comparison; existing
+  `updates`, `inplace`, `renames`, and `rename_kib` telemetry exposes the
+  allocation effect. The optimization is resolution-, filter-, layout-, and
+  quality-independent and does not target one user preset. This is an
+  update-only physical-test release; no RPCS3 resources were used.
+- v1.74 removes repeated world dynamic-lightmap arithmetic from the paired
+  stereoscopic pass. While stereo is active, the first eye retains up to 512
+  KiB of compact final lightmap tiles in bounded PPU memory; a matching surface
+  in the second eye repacks those exact texels into its independently allocated
+  dynamic atlas. The second eye retains its own visibility, atlas coordinates,
+  upload, draw order, and RSX commands, so brush-model texture replacement and
+  asymmetric eye visibility remain correct. Per-surface generation checks and
+  capacity overflow use the original build path, and mono rendering calls that
+  original path directly without retention or copy overhead. Set
+  `ps3_rsx_stereo_lightmap_reuse 0` for a live A/B comparison. Telemetry adds
+  `stereo_lm_reuse_pixels`; the inline text and persistent BSP paths remain
+  active. The exact inline-text command reservation was also verified against
+  the installed librsx unsafe-emitter machine code. This is an update-only
+  physical-test release; no RPCS3 resources were used.
+- v1.73 moves eligible opaque BSP lightmapped vertices into an eight-MiB
+  persistent RSX-local arena during map registration. Visible world surfaces
+  now append only compact 16-bit fan indices; position, base UV, and lightmap
+  UV payloads are no longer repacked every frame or repeated for the second
+  stereo eye. Pages remain independently batchable within the 65,535-vertex
+  hardware index range, while dynamic-light, water, flowing, translucent,
+  alpha, unsupported, restart-stale, and arena-overflow surfaces automatically
+  retain the established dynamic path. Overbright scale moved to a vertex
+  shader uniform so the persistent payload remains invariant. The optimization
+  is enabled for Custom and both presets and is independent of resolution,
+  filters, stereo format, framebuffer layout, and quality choices. Telemetry
+  adds `static_lm_vertices`; set `ps3_rsx_static_world 0` for comparison. The
+  new path passed a clean serial toolchain build and boundary simulation; this
+  update-only release still requires physical-console cadence validation and
+  no RPCS3 resources were used.
+- v1.72 replaces every native console, menu, HUD, and single-character glyph
+  submission with bounded command-buffer inline RSX quads. Position, UV, and
+  resolved color now travel in the ordered method stream itself, completely
+  removing recycled XDR/local vertex addresses and vertex-cache generations
+  from the text path which remained common to all prior stale/doubled-text
+  attempts. Each chunk is reserved before Begin/End and reduces a visible glyph
+  from six 40-byte arena vertices to four inline quad vertices; the old arena
+  route remains available with `ps3_rsx_inline_text 0` for diagnosis. Applying
+  Video Options now enables all proven submission accelerators for Custom as
+  well as both named profiles, while resolution, stereo, filters, framebuffer
+  layout, and quality controls remain independent. This is an update-only
+  physical-test release; no RPCS3 resources were used.
+- v1.71 replaces the remaining generic client-array particle submission with a
+  typed native triangle path. GL1 now stores one color per particle instead of
+  three identical copies, saving 128 KiB of persistent PPU memory and avoiding
+  repeated array-state toggles, stride/type checks, source-index dispatch, and
+  per-corner color resolution. The final three world-space vertices, texture
+  coordinates, color, blend/depth state, matrix, batch ordering, and distinct
+  per-eye RSX ranges are unchanged. Video Options also separates the visual
+  preset from a truthful Profile/Display, 30 FPS, or 60 FPS presentation cap.
+  Thirty FPS is now the telemetry floor for every custom or preset combination:
+  every report includes `floor_fps=30` and `floor_misses`, while the selected
+  60 FPS target retains its stricter miss count. No glyph, console/menu
+  frontend, UI arena-selection, cache-invalidation, or flip-fenced ring logic
+  changed. The native OSK remains active. This is an update-only physical-test
+  release; sustained rates still require the reported hardware cadence.
+- v1.70 removes repeated particle expansion from the native stereo pass without
+  changing its RSX submissions or the physical-console text path. Particle
+  atlas coordinates now initialize only when a higher active-particle count is
+  first reached instead of being rewritten every frame. The first eye retains
+  the completed world-space position/color arrays for the immediately paired
+  eye, which shares the same simulation snapshot and view axes; the second eye
+  still packs them into a fresh append-only RSX range and uses its own matrix,
+  viewport, and draw. Stereo-eye lifecycle detection now also recognizes the
+  second surface when depth is exactly zero, enabling all established paired-eye
+  caches in that valid configuration. The direct rotating UI stream and every
+  console/menu frontend object are byte-identical to v1.69. This is an
+  update-only physical-test release; `ps3_rsx_stats 1` remains the sustained
+  720p/60 and 1080p/30 acceptance gate.
+- v1.69 extends paired-eye MD2 reuse to projected-shadow expansion. For an
+  ordinary lit entity with v1.67's retained BSP light sample, the first eye now
+  stores the final untextured shadow primitive stream in the same fixed one-MiB
+  arena used by interpolation and model commands. The second eye retains its
+  own culling, shadow matrix, blend/depth state, and RSX draw submission but no
+  longer walks the MD2 command list or repeats the per-vertex projection math.
+  Fullbright, shell, no-lightdata, second-eye-only, and arena-overflow cases
+  retain the original path. Main MD2 and shadow client-array state is also
+  enabled once per entity instead of once per primitive. The new shadow fields
+  add exactly three KiB of BSS and no second arena. The native OSK, direct
+  rotating UI stream, and opt-in telemetry remain active. This is an
+  update-only physical-test release.
+- v1.68 removes the remaining eye-independent MD2 command expansion from the
+  paired native stereo pass. The first eye now retains the final primitive
+  type, position, texture-coordinate, and lit-color streams in v1.67's same
+  fixed one-MiB arena; the second eye submits those streams through its own
+  matrix, depth, and RSX draw path without walking the model command list or
+  rebuilding vertex colors. Interpolation and expanded commands share that
+  arena, so this adds only about three KiB of descriptor state rather than a
+  second large buffer. Per-entity overflow rolls back partial command data and
+  immediately uses the original scratch path. Mono output, eye-specific
+  culling, projected shadows, and all draw ordering remain unchanged. The
+  native OSK and opt-in stage telemetry remain active. This is an update-only
+  physical-test release.
+- v1.67 removes eye-independent MD2 work from the paired native stereo pass.
+  The first eye now retains normal entity light samples, shade orientation,
+  shadow light spots, and model-space interpolated vertices; matching entities
+  visible to the second eye reuse those results while still performing their
+  own eye-specific culling, matrices, depth, projected-shadow submission, and
+  RSX draws. A fixed one-MiB vertex arena is consumed by actual visible model
+  sizes, with roughly 11 KiB of descriptors; overflow and entities visible in
+  only one eye use the original path. Maps without BSP light data are excluded
+  from lighting reuse because the legacy fallback intentionally leaves the
+  shadow sample position unchanged. Mono output is untouched. v1.66's opaque
+  animation cache, the native OSK, and opt-in stage telemetry remain active.
+  This is an update-only physical-test release.
+- v1.66 caches animated-texture resolution for native opaque world surfaces.
+  Quake II resolves an animation by walking its linked texinfo chain for every
+  surface; the native path now retains that result for the current animation
+  frame and registration generation, sharing it across repeated surfaces and
+  the paired stereo eye. Loader-time validation permanently excludes any chain
+  containing a translucent frame, preserving the original alpha path's
+  order-sensitive texinfo mutation, and static textures retain their direct
+  path. The cache exists only in native-RSX model data and is bounded by the
+  map format to 128 KiB. v1.65 culling, v1.64 telemetry, v1.63 stereo-light
+  reuse, and v1.62's asynchronous native OSK remain active. This is an
+  update-only physical-test release; `ps3_rsx_stats 1` remains the performance
+  acceptance gate.
+- v1.65 specializes native frustum rejection for the answer the renderer
+  actually consumes. The general box/plane routine projected both extreme
+  corners to classify front, back, or spanning; GL1 only rejects a node when
+  its most-forward support corner is still behind a frustum plane. The native
+  path now selects and projects that one corner directly, halving the
+  multiply/add work and avoiding the general out-of-line classifier for every
+  BSP node and culled entity. All comparisons and equality boundaries are
+  identical; an exhaustive one-million-case sign-mask test produced zero
+  classification differences. v1.64 stage telemetry, v1.63 stereo light reuse,
+  the native OSK, and the direct rotating UI stream remain active. This is an
+  update-only package; physical telemetry remains the final performance gate.
+- v1.64 extends the opt-in physical-console telemetry with PPU stage
+  attribution. Every 120 completed frames, `ps3_rsx_stats 1` now emits a
+  second `PPU stages` record containing average and worst-case microseconds for
+  dynamic-light marking, view/PVS setup, world submission, entities,
+  particles/dynamic-light effects, alpha/flash work, the complete measured
+  scene, and remaining renderer/UI work. Stereo eye passes accumulate into one
+  displayed-frame sample, so the numbers align with the existing cadence and
+  720p/60 or 1080p/30 target-miss record. Normal play performs no timestamp
+  calls while stats are disabled. v1.63's stereo light reuse, v1.62's OSK, and
+  v1.60's direct rotating local UI stream are unchanged. This is an update-only
+  diagnostic release intended to identify the next measured optimization.
+- v1.63 replaces v1.62's never-eligible stereo BSP replay experiment with a
+  smaller correctness-safe optimization. Native frame-packed rendering now
+  identifies the paired second eye at the renderer frame boundary and reuses
+  the first eye's dynamic-light BSP and inline brush-model marks. Each eye
+  still advances its own surface-visibility generation and performs its own
+  BSP/frustum walk, preserving its offset camera origin, PVS, backface choice,
+  translucent order, and geometry. Dynamic-light generation is now explicitly
+  separate from the visibility generation on all render paths; mono output is
+  unchanged. The inert 256-KiB replay cache and its inaccurate trace claim are
+  removed. v1.62's native OSK and v1.60's direct rotating local text stream are
+  unchanged. This is an update-only package; physical target-miss telemetry
+  remains the 720p/60 and 1080p/30 acceptance gate.
+- v1.62 adds the native PS3 on-screen keyboard to every editable menu
+  field. Cross/Enter opens an asynchronous system dialog with the existing
+  value prefilled: server-address entries use the URL layout, server limits
+  use the numeric keypad, and player/host names use the full keyboard. The
+  dialog uses a temporary four-MiB container, returns it only after the
+  system's unloaded event, consumes pad input while open, and never blocks
+  the engine/sysutil loop. The v1.60 direct local text path remains unchanged.
+  This is an update-only package; physical `target_misses` telemetry remains
+  the 30/60 FPS gate.
+- v1.61 reduces native entity submission work without changing visible model
+  order or geometry. A single stable encounter-order list records translucent
+  entities while solid entities are visited, eliminating the second scan of
+  the frame entity array and avoiding depth-write state changes when the list
+  is empty. Fully off-frustum sprites and beams are rejected before texture,
+  blend, matrix, and vertex work, while visible sprites use the renderer's
+  direct textured-fan path rather than the generic client-array decoder.
+  v1.60's direct rotating GPU-local console/menu stream remains byte-for-byte
+  unchanged. The 720p/60 and 1080p/30 targets still require physical-console
+  telemetry confirmation. This is an update-only package for an existing
+  installation.
+- v1.60 removes the asynchronous main-to-local copy from the preferred physical
+  console/menu/HUD vertex path. Completed 2D batches are now packed directly at
+  their final address in the existing 16 MiB rotating GPU-local ring, followed
+  by the established per-batch vertex-cache invalidate. The completed flip
+  still fences every address before ring reuse. This prevents a vertex fetch
+  from racing the asynchronous transfer that populated its local destination,
+  eliminates one complete copy and its XDR cache publication, and adds no RSX
+  memory beyond v1.59. `ps3_rsx_ui_local_stage 1` retains the DMA-staged path
+  for A/B testing, while zero retains direct XDR; allocation pressure falls
+  back automatically. v1.59's sparse world traversal and target-miss telemetry
+  remain intact. This is an update-only package for an existing installation.
+- v1.59 removes two fixed-range scans from each native world pass. BSP
+  traversal now records the sparse set of base textures that actually received
+  visible surfaces, then consumes that set in the same ascending material order
+  instead of checking all 1,024 registered-image slots. Combined-lightmap
+  buckets likewise visit only occupied pages while retaining ascending page
+  order. Geometry, surface linkage, lighting, shaders, and fallback behavior
+  are unchanged. Opt-in `ps3_rsx_stats 1` reports the active 720p/60 or
+  1080p/30 target, cadence samples, and target misses every 120 frames for
+  direct physical-console verification. v1.58's rotating GPU-local text ring
+  and offscreen UI rejection remain unchanged. This is an update-only package
+  for an existing installation.
+- v1.58 fixes a same-address reuse gap in the GPU-local console/menu staging
+  path. The PPU-side XDR construction stream already rotated between frames,
+  but the immutable local destination still restarted at offset zero every
+  vblank, recreating the physical RSX vertex-fetch cache pattern that rotation
+  was intended to avoid. The preferred local stage is now a 16 MiB flip-fenced
+  ring that leaves one complete 8 MiB worst-case frame budget before wrapping;
+  allocation pressure automatically falls back to the previous 8 MiB staged
+  path, then to direct XDR only if both local allocations fail. Fully offscreen
+  2D quads, strings, and individual glyphs are rejected before vertex packing,
+  cache publication, transfer, and fetch. Scaled consoles also stop walking
+  rows that cannot reach the viewport. These changes reduce PPU work and UI
+  transfer bandwidth while preserving glyph geometry, texture coordinates,
+  draw order, shaders, and the 720p/60 and 1080p/30 performance targets. This
+  is an update-only package for an existing installation.
+- v1.57 adds optional native RSX presentation filters after the complete scene,
+  HUD, console, and menu. Scanlines, RGB aperture grille, vignette, CRT soft,
+  and CRT strong are generated procedurally in one multiplicative fragment pass
+  per eye; strength is live from 0.0 to 2.0, and Off performs no draw or shader
+  work. Stereo applies the pass before closing each eye, preserving both HDMI
+  frame packing and top/bottom routing. Video Options also exposes texture
+  filtering, dynamic lighting, screen color blends, and 0/2x/4x overbright;
+  the native renderer's nonfunctional one-sample MSAA selector is hidden.
+  Performance presets now select real scanout targets and all proven batching,
+  state-cache, texture-lifetime, combined-lightmap, and staged-UI switches: 720p
+  is paired with a 60 FPS cap, while native 1080p is paired with a paced 30 FPS
+  cap and safely falls back to the XMB mode if unavailable. Tiled targets and
+  Z-cull remain conservative manual diagnostics. v1.54's GPU-local staged text
+  transfer, complete-range cache publication, immutable draw source, and
+  flip-fenced destination reuse remain intact pending physical validation. The
+  release is an update-only package for an existing v1.50 installation.
+- v1.56 reduces PPU submission work in the native combined-lighting path while
+  leaving v1.54's GPU-local staged console/menu stream, vertex layout, shaders,
+  and visual decisions unchanged. Each non-empty base-texture/lightmap-page
+  bucket now prepares the combined program, sampler pair, stream mode, indexed
+  mode, and overbright scale once; its BSP fans then use a prepared append path
+  instead of repeating those invariant checks per surface. Empty page slots are
+  skipped, inline brush models retain the standalone path, and material changes
+  remain batch boundaries. The release is a two-file update package for an
+  existing v1.50 installation; physical-console text and pacing validation are
+  still required.
+- v1.55 keeps v1.54's GPU-local staged UI path byte-for-byte intact and removes
+  duplicate PPU work left in v1.53's combined world-chain fallback. The chain
+  walk already resolves the animated base image and classifies each surface's
+  lightmap state; non-combined surfaces now reuse those values instead of
+  repeating texture animation and scanning light styles inside the ordinary
+  brush helper. Rendering branches, dynamic-lightmap updates, texture bindings,
+  and brush counters are unchanged. All 137 comparable build objects except
+  `gl1_surf.o` are byte-identical to v1.54, including `rsx_gl.o` and every
+  console/menu frontend object. Physical text and sustained-frame validation
+  remain required; this release is a two-file update package.
+- v1.54 replaces the physical console's remaining direct XDR vertex fetch for
+  console, menu, HUD, and other orthographic geometry. The PPU still constructs
+  complete batched strings in the 16 MiB rotating main-memory arena, but each
+  completed batch is now fully evicted from the PPU cache and copied by an
+  ordered RSX transfer into a separate eight-MiB local staging arena. The draw
+  invalidates RSX's prior vertex-cache generation and binds only that immutable
+  local copy. This removes both non-coherent direct fetch and same-address CPU
+  rewrite from the stale/doubled text path. Allocation failure retains the
+  v1.53 direct-XDR fallback, and `ps3_rsx_ui_local_stage 0` selects it for
+  diagnosis. The local arena is recycled only after the preceding flip fence;
+  ordinary frames add no GPU finish. All 137 comparable build objects except
+  `rsx_gl.o` are byte-identical to v1.53, preserving its combined-lighting and
+  world-chain optimizations. Physical-console text and pacing validation remain
+  required, and the release is again a two-file update package.
+- v1.53 removes redundant PPU work from the native combined-lighting world
+  path while retaining v1.52's RSX sampler optimization. Each opaque world
+  base-texture chain now resolves its base binding, overbright scale, and
+  feature gate once instead of once per compatible surface. Its reusable
+  lightmap bucket table clears only consumed heads and scans only the occupied
+  page range rather than all 128 lightmap slots for every base image. Material
+  grouping, draw order, lighting math, and fallback eligibility are unchanged.
+  All 137 comparable build objects except `gl1_surf.o` are byte-identical to
+  v1.52, including `rsx_gl.o` and the complete console/menu frontend. The
+  release remains a two-file update package for the v1.50 full installation;
+  duplicate/stale text and sustained frame pacing still require physical-console
+  validation.
+- v1.52 reduces native combined-lighting state traffic without touching UI
+  geometry or visual ordering. Texture-sorted world chains hold the base image
+  constant while iterating lightmap pages, but the v1.50 path treated both RSX
+  samplers as one dirty unit and re-emitted the unchanged base descriptor at
+  every page transition. Independent dirty tracking now reloads only the
+  sampler whose texture or descriptor changed. Texture-cache invalidation
+  remains explicit, copy-on-update hazard accounting is preserved for both
+  units, and program transitions conservatively re-establish the pair.
+  `lm_base_sets` and `lm_page_sets` in the 120-frame RSX trace expose the
+  reduction on hardware. All 137 comparable build objects except `rsx_gl.o`
+  are byte-identical to v1.51, including the complete console/menu frontend.
+- v1.51 phase-locks input and simulation to the completed native VSync flip
+  before sampling the next frame delta. This removes the independent software
+  throttle followed by a second renderer flip wait that could drift into a
+  missed refresh and produce slight movement jerk. `ps3_vsync_prewait 1` is
+  the archived default; value 0 restores the bounded 50-microsecond polling
+  fallback. RSX telemetry now reports average/maximum presentation cadence and
+  counts intervals over 20 and 34 ms. The v1.50 full-surface clear, exact
+  40-byte UI layout, rotating 16 MiB cache-published text stream, combined
+  baked-lighting path, and all game data remain unchanged. The release is a
+  two-file update package (PARAM.SFO and EBOOT.BIN) for an existing v1.50 full
+  install; duplicate/stale text and pacing require physical-console validation.
+- v1.50 restores the missing baked world lighting and targets the physical
+  console's resolution-dependent frame drops with one native RSX draw per
+  compatible opaque BSP surface. The established renderer drew each surface
+  once for its base texture and again for its lightmap; physical-style depth
+  replay rejected the equal-depth second pass, leaving the world effectively
+  fullbright. A dedicated two-sampler Cg program now multiplies both textures
+  in the first pass. In the repeatable 720p `base1` workload this removed about
+  20 percent of frontend draws, packed vertices, and indices, at the cost of
+  more material-pair submissions; the expected physical fill-rate benefit
+  still requires console validation. `ps3_rsx_combined_lightmaps 0` restores
+  the old path live and is archived as a hardware fallback. The implementation
+  deliberately reuses the proven v1.47 40-byte vertex layout, so the rotating
+  cache-coherent console/menu/HUD stream is byte-for-byte unchanged. Exact
+  signed-EBOOT tests passed extended console text, Video Options, mono gameplay,
+  top/bottom stereo, projected shadows, sound/input startup, screenshots, the
+  disabled combined-path fallback, and full teardown with zero normal-frame
+  GPU finishes. Native HDMI frame packing and physical text/frame-pacing remain
+  hardware-validation items.
+- v1.47 hardens v1.46's cache-coherent text path against physical RSX fetch
+  retention. The mapped UI vertex stream grows from an 8 MiB frame-reset arena
+  to a 16 MiB rotating arena: console/menu/HUD batches append across completed
+  frames and reuse offset zero only at a flip-fenced frame boundary while still
+  reserving the previous 8 MiB worst-case frame budget. This removes routine
+  same-address-per-vblank rewrites without changing glyph geometry, draw order,
+  stereo layout, or batching. A failed 16 MiB allocation/map automatically
+  retries the proven 8 MiB coherent path; `ps3_rsx_ui_vertex_ring 0` plus
+  `vid_restart` selects that fallback explicitly for diagnosis. Physical-console
+  validation remains required.
+- v1.46 is the boot-safe release repack of v1.45's complete-string UI batching,
+  cache-coherent XDR text stream, and typed fan optimization. Two later timing
+  and stereo-readback experiments were rejected: the desktop 1.2x VSync target
+  produced an incomplete mono capture, while selecting a different stereo eye
+  did not make tiled-surface diagnostics deterministic across repeated runs.
+  The v1.46 linked program image therefore remains byte-for-byte equivalent to
+  the tested v1.45 image (the newly generated NPDRM wrapper has its own hash);
+  only install metadata advances so it can replace the crashing package.
+  Physical-console text and pacing validation remain required.
+- v1.45 extends v1.44's complete-string RSX path to right-aligned qmenu
+  labels, center-print messages, and credits. In particular, Video Options no
+  longer dispatches its green left-column labels one glyph at a time. The PS3
+  main loop now sleeps for 50 rather than 5 microseconds between no-frame
+  iterations, removing thousands of unnecessary LV2 sleep, command-buffer,
+  and sysutil polls per second while keeping 50-microsecond scheduling
+  resolution. An attempted residual-cadence scheduler was rejected during A/B
+  testing because it produced horizontally incomplete world captures; the
+  established render/network delta reset remains unchanged. An extended RPCS3
+  Video Options run retained the exact v1.44
+  layout with complete green/white text, stable repeated 120-frame telemetry,
+  no normal-frame GPU finishes, and clean shutdown. The final exact signed
+  v1.45 EBOOT then completed five telemetry intervals (600 rendered frames),
+  loaded and rendered `base1`, submitted the projected shadow, produced a
+  complete screenshot, retained zero normal-frame GPU finishes, and completed
+  full sound/input/video teardown. Physical frame-pacing and text validation
+  remain required.
+- v1.44 submits each ordinary console row, notification, HUD line, inventory
+  label, and left-to-right menu string as one contiguous native RSX glyph run.
+  Spaces retain their advance without consuming geometry, atlas cells keep the
+  half-texel inset, and the effective vertex color is resolved once per run.
+  It removes repeated texture binds, function dispatch, arena reservations,
+  and color conversion from every visible character. UI vertices now use a
+  separate cache-coherent mapped-XDR arena by default, with explicit PPU cache
+  publication before RSX consumption. This removes the physical stale-text
+  path from repeatedly rewritten RSX-local memory without moving world/model
+  geometry off its established stream; `ps3_rsx_ui_main_memory 0` plus
+  `vid_restart` restores the old shared stream for diagnosis. New `ui_strings`
+  and `ui_glyphs` telemetry counters expose whether the batched frontend path
+  is active on hardware. The typed
+  BSP/lightmap/water/sky fan path also emits its known sequential fan indices
+  directly instead of re-entering generic primitive decoding for every index.
+  The release is built through the corrected strip -> `sprxlinker` -> NPDRM
+  pipeline retained from v1.43; physical-console text and pacing validation is
+  still required.
+- v1.43 replaces the withdrawn v1.41/v1.42 packages. Those EBOOTs were signed
+  directly from the raw linker output and skipped PSL1GHT's required
+  `sprxlinker` pass, leaving every import descriptor with a zero function count.
+  GameOS therefore recognized `sysPrxForUser` but never bound its functions;
+  newlib's pre-main allocator constructor recursed through the unresolved
+  spinlock stub and returned to XMB. The standard strip -> sprxlinker -> NPDRM
+  pipeline is restored and verified: the exact signed v1.43 EBOOT enters main,
+  loads and renders `base1`, captures two 120-frame telemetry intervals, and
+  completes the full sound/input/video shutdown before `sys_process_exit`.
+  v1.41's direct non-retained RSX UI stream and top/bottom stereo mode remain.
+  v1.42's direct native BSP/lightmap/water/sky fan path remains, with its common
+  batching/fallback logic consolidated. Effective vertex color is now resolved
+  once per direct UI or surface draw rather than once per vertex, reducing PPU
+  work while preserving the existing shaders, lightmap blend, and draw order.
+- v1.42 keeps v1.41's corrected stereoscopic output and direct native 2D path,
+  then moves the highest-volume world submission path out of the generic GL
+  client-array decoder. BSP base surfaces, lightmap chains, turbulent water,
+  flowing surfaces, and sky faces now feed their known aligned position/UV
+  layout directly into the existing native indexed or expanded RSX batches.
+  Rendering order, geometry, shaders, texture state, and the diagnostic batch
+  toggles are unchanged. The optimization removes repeated client-state,
+  pointer, stride, and format validation work for roughly a thousand surface
+  calls in a representative gameplay frame; physical-console frame pacing and
+  visual correctness still require validation. Its distributed package was
+  rejected because it omitted the final import-table link pass; v1.43
+  supersedes it.
+- v1.41 retains v1.40's corrected `VIDEO_STATE_ENABLED` boot handling and adds
+  a standard 1280x720 top-and-bottom stereoscopic compatibility mode. Physical
+  photographs and traces showed the remaining large "duplicated text" blocks
+  were complete top/bottom eyes plus the 30-line HDMI packing gap, not duplicate
+  glyph draws. Video Options can now select off, native frame packing, or
+  top/bottom; the latter avoids 1280x1470 HDMI negotiation and is intended for
+  a display, projector, capture device, or AVR that exposes the raw packed
+  image. The RSX backend maps each full virtual eye into one 1280x360 half.
+  Console characters, HUD elements, menu pictures, solid fills, fades, and
+  cinematics now use a direct native RSX 2D-quad stream. This removes temporary
+  GL client arrays and repeated state decoding from the UI path, eliminates the
+  last retained-array variable from the stale-text investigation, and reduces
+  PPU submission overhead. v1.40's single-write effective vertex-color packing
+  remains active for world and model geometry.
+- v1.40 fixes the v1.38 boot regression identified by physical logs. Blocking
+  HDMI configuration successfully selected 0x81/1280x1470 and then reported
+  video state 1 (`VIDEO_STATE_ENABLED`), but the inherited backend accepted only
+  the transient/legacy value 0 and rejected renderer initialization with "No
+  usable renderer found." Startup, restart, and render-size validation now
+  accept both observed usable states while still rejecting busy/unknown output.
+  The blocking stereo transition and its requested/confirmed mode telemetry are
+  restored so the raw packed-eye text diagnosis can finally reach RSX, together
+  with the single-pass effective vertex-color packing optimization.
+- v1.39 is an emergency rollback to the physically proven v1.37 executable
+  behavior. v1.38 returned directly to XMB before `main()` and did not update
+  `boot-trace.log`, so its blocking video-mode confirmation and vertex-color
+  packing experiment are both removed. Video configuration, vertex preparation,
+  renderer synchronization, UI handling, lighting, sound, and performance paths
+  are again identical to v1.37; only package/SFO version metadata is newer so
+  the PS3 will install the rollback over v1.38.
+- v1.38 identifies the remaining "duplicated text" from physical photographs
+  and the matching trace as the complete 1280x1470 HDMI frame-packed image,
+  not duplicate glyph geometry: the top and bottom 720-line eye images plus the
+  30-line packing gap were being exposed as one ordinary picture. PS3 video
+  configuration now blocks until GameOS completes the HDMI transition, confirms
+  the requested mode id and dimensions before RSX allocates/presents matching
+  buffers, and records the confirmed resolution, video state, and port type in
+  `boot-trace.log`. An unconfirmed or inherited mode was explicitly reasserted.
+  Vertex packing also folded GL_REPLACE and lightmap RGB scaling into the initial
+  color write. This build was rejected after its physical PS3 EBOOT exited before
+  `main()`; v1.39 fully rolls it back.
+- v1.37 supersedes the incomplete v1.36 UI-cache diagnosis after physical PS3
+  testing still showed doubled and retained console/menu text. Orthographic UI
+  fans and quads now bypass the dynamic index arena entirely and expand into one
+  deterministic triangle stream. Each 2D batch republishes and invalidates its
+  vertex fetches, and charset UVs sample half a texel inside their 8x8 atlas
+  cells. World/model geometry keeps indexed batching and its bandwidth savings.
+- Audit the reported brightness difference without altering Quake II's valid
+  lighting equation. OpenGL and RSX blend constants match exactly for the
+  destination-times-lightmap pass, and native upload gamma already follows
+  SDL's reciprocal exponent. Startup telemetry now records gamma, texture
+  intensity, lightmap modulation, fullbright, and overbright values so the next
+  physical trace can identify an archived-setting difference precisely.
+- Remove recurring PPU heap traffic from the renderer hot path. Particle batches
+  reuse workspaces bounded by `MAX_PARTICLES`; MD2 models and projected shadows
+  share workspaces bounded by the loader's `MAX_VERTS`; flowing surfaces,
+  offset lightmaps, and water warps use their existing 64-vertex bounds. This
+  eliminates large per-frame particle allocation plus per-entity and per-surface
+  malloc/free churn. Flip polling is tightened from 200 to 50 microseconds to
+  reduce post-vblank command-generation latency without changing 60 Hz gameplay
+  timing or the five-second recovery bound.
+- v1.36 attempted to fix the physical-RSX stale/doubled UI geometry through
+  dynamic vertex-cache synchronization, but physical testing proved that was
+  insufficient and motivated v1.37's separate non-indexed 2D path.
+  Dynamic glyph, menu, particle, model, and projected-shadow vertices reuse the
+  same local-video-memory addresses each frame, but the old submission path
+  invalidated RSX's vertex cache only for the optional XDR stream. RPCS3 did not
+  reproduce that cache retention. Every dynamic local or XDR draw now publishes
+  its completed writes, and the first consumer of each recycled arena generation
+  invalidates RSX's prior vertex-cache view. This supersedes the v1.33-v1.35
+  clear and scale hypotheses while retaining the full acquisition clear as a
+  valid back-buffer lifecycle guard.
+- Make projected shadows a completely explicit native pass: untextured,
+  alpha-test and cull disabled, standard source-alpha blending, and depth writes
+  disabled. Quake's existing 0.1-unit lift is retained without RSX polygon
+  offset, which a controlled nearby-caster A/B showed could create long black
+  streaks. The diagnostic
+  trace is emitted only after real shadow vertices are submitted; the exact
+  signed v1.36 EBOOT submitted a 602-vertex projected shadow in `base1`.
+- Match engine and presentation cadence on PS3. Frame timing now comes from
+  LV2's monotonic system timer, and VSync scheduling targets the actual 60 Hz
+  output instead of the desktop renderer's 1.2x safety rate (72 Hz on a 60 Hz
+  display). The native flip remains the final refresh-accurate throttle.
+- Begin functional native PS3 sound. Fix the startup mixer lock that permanently
+  starved the audio thread, sample the hardware cursor after each notification,
+  zero new hardware blocks, make notification timeouts recoverable, maintain a
+  16-bit stereo software ring, and stage all port/queue/thread cleanup. `soundinfo`
+  now reports hardware blocks copied, blocks containing mixed samples, and zero
+  blocks used while the mixer owns the ring. An exact-EBOOT RPCS3 run opened the
+  48 kHz stereo port, advanced playback, and joined the audio thread cleanly;
+  audible output and music still require physical-console validation.
+- Fix stale/doubled console rows and retained translucent scene objects at the
+  render-target lifecycle boundary. v1.33-v1.34 asked GL1 to clear color after
+  each eye was selected, but physical RSX could execute that clear with raster
+  state inherited from the preceding pass. v1.35 clears the complete newly
+  bound back buffer, depth buffer, and stencil plane immediately after frame
+  acquisition under an explicit full-target scissor and full write masks.
+  Normal rendering no longer depends on console scale or previous-eye state.
+- Restore Quake II's projected entity shadows. Hardware face culling, enabled
+  by default after the early native builds, could reject the flattened shadow
+  mesh even though the original model was visible. The shadow pass now disables
+  culling locally and restores it immediately afterward. New and existing PS3
+  configurations migrate once to `r_shadows 1`, and Video Options exposes a
+  live **entity shadows** toggle; stencil overlap suppression remains optional.
+- Split the experimental framebuffer selector into safe linear, tiled without
+  Z-cull, and tiled plus Z-cull modes. Physical v1.34 validated the combined
+  path only in frame-packed 3D, so mono can now isolate tiled color/depth layout
+  from Z-cull metadata. All experimental modes remain session-only and a full
+  relaunch restores linear targets.
+- Remove redundant native clear work. The acquisition clear covers both packed
+  eyes and their independent depth regions in one ordered GPU operation, so
+  ordinary GL1 color/depth clears are skipped unless `r_clear`, z-trick, or a
+  special stencil mode explicitly requires them. Renderer hot-path cvar caches,
+  indexed batching, state filtering, and dynamic-texture reuse remain enabled.
+- Retire v1.34's ineffective menu-scale workaround. Physical testing proved the
+  reported doubled lines survived at 1x because they were retained framebuffer
+  contents. v1.35 restores automatic menu scaling only for configurations that
+  received the known v1.34 migration; preexisting and explicit choices remain
+  untouched.
+- Add a real **PS3 output** selector to Video Options. **720p performance**
+  reconfigures HDMI scanout and the native RSX color/depth targets to 1280x720,
+  reducing the framebuffer pixel workload by 55.6 percent compared with
+  1920x1080. **system / XMB mode** restores the display mode that was active
+  when the game started. Apply performs the required renderer restart; stereo
+  continues to select its mandatory 720p frame-packed output.
+- Expose the existing native tiled-color/depth plus Z-cull path as an
+  experimental Video Options toggle. It remains session-only and defaults to
+  linear targets after every relaunch, providing automatic recovery if a
+  physical RSX rejects the layout. Cache native-renderer cvar objects as well,
+  removing repeated name-table searches from each frame and dynamic-lightmap
+  update while preserving all live diagnostic switches.
+- Preserve the native renderer's complete Quake II lighting path and document
+  what it renders: compiled RSX Cg vertex/fragment programs combine the GL1
+  frontend's base textures, baked lightmaps, vertex modulation, and additive
+  dynamic-light passes. This is the original Quake II lighting model rather
+  than a modern material-shader replacement; no lightmap or shader stage was
+  removed from the native build.
+- Set a PS3 console-only 1x text scale instead of Yamagi's automatic integer
+  scale. The inherited default enlarged every font texel 2x at 720p and 3x at
+  1080p, making dense console lines resemble duplicated or overprinted text.
+  Existing configurations using the automatic value migrate once; explicit
+  user scale choices, menu scaling, and HUD scaling remain untouched.
+- v1.33 first added a native color clear after controlled captures retained
+  horizontal scanlines. Indexed/expanded/unbatched/filtering comparisons ruled
+  out geometry batching, but the later physical v1.34 pass proved the remaining
+  console artifact was retained target content rather than font scaling. v1.35
+  therefore moves the clear to full-surface acquisition as described above.
+- Add a direct **remap DualShock 3** entry to Options. Its binding screen uses
+  Cross/Circle/Square/Triangle, Select, Start, L1/R1/L2/R2/L3/R3, and D-pad
+  names; Cross selects an action, the next pressed controller button assigns
+  it, Triangle clears it, and Circle exits. Select is now a regular bindable
+  `BTN_BACK` key while retaining its menu behavior through a one-time migration
+  for existing configurations. Bindings are archived in the normal config.
+- Enable bounded 16-bit indexed RSX batching by default now that the native
+  renderer has passed physical-console gameplay. Matched 120-frame RPCS3
+  `base1` runs previously reduced streamed source vertices from 669,342 to
+  406,272 (39.2 percent) while preserving the draw workload. Existing archived
+  safety defaults are migrated once; `ps3_rsx_indexed_batch 0` remains the live
+  expanded-geometry recovery path.
+- Fix first-use geometry corruption in the optional mapped-main-memory RSX
+  stream. v1.31 ordered PPU stores and invalidated RSX's vertex cache, but did
+  not write dirty 128-byte PPU cache lines back to XDR before the GPU fetched
+  them; RPCS3 reproduced this as a mostly black first `base1` capture followed
+  by complete later maps after incidental cache eviction. v1.32 publishes each
+  completed vertex/index range with `dcbst`, combines indexed ranges behind one
+  memory barrier and one RSX vertex-cache invalidation, and retains the stronger
+  `dcbf` path only for GPU-to-PPU screenshot DMA. The exact signed v1.32 EBOOT
+  produced complete `base1`, `city1`, `waste1`, `space`, and `boss2` captures
+  with mapped streams on both linear targets and tiled targets plus Z-cull.
+  Both five-map sweeps shut down normally with zero normal-frame GPU-wide
+  finishes or renderer faults. A further exact packaged-EBOOT run combined
+  mapped streams, tiled targets/Z-cull, and 1280x1470 frame-packed stereo; its
+  separately read top and bottom eyes were complete and distinct, with normal
+  teardown and no normal-frame finish. Main-memory streaming remains opt-in
+  pending a physical-console performance pass.
+- Add opt-in native-renderer frame-time telemetry for physical-console A/B
+  testing. `ps3_rsx_stats 1` now measures the completed-flip wait and PPU-side
+  RSX command-generation interval with microsecond timestamps, then reports
+  average/max milliseconds plus counts above 20 and 34 ms every 120 frames.
+  Timing calls and trace writes remain absent when statistics are disabled.
+  The exact signed v1.31 EBOOT completed a 240-frame RPCS3 `base1` smoke test,
+  produced a complete framebuffer capture, emitted both timing records, and
+  retained zero normal-frame GPU-wide finishes. A broader packaged-EBOOT sweep
+  also produced complete `base1`, `city1`, `waste1`, `space`, and `boss2`
+  framebuffers across repeated renderer/map registration, animated warp/sky
+  materials, dynamic lightmap updates, entities, weapons, and UI. The same
+  ordered sweep then passed with tiled color/depth targets and Z-cull active.
+  Matched linear/tiled captures differed only in time-dependent animation and
+  weapon-bob regions; both retained complete world geometry. Every measured
+  interval retained zero normal-frame GPU-wide finishes, with no flip timeout
+  or renderer fault.
+- Make direct XMB Exit Game from active gameplay follow the physically proven
+  menu-first lifecycle more closely. Once the sysutil callback commits to
+  process termination, v1.31 skips local-server/game-module cleanup as well as
+  the already guarded RSX teardown; LV2 reclaims those process-owned resources.
+  Normal console `quit` still performs complete server, client, renderer, and
+  common shutdown. Direct gameplay exit requires a physical-console retest;
+  returning to the main menu first remains the known-safe fallback.
+- Make native framebuffer readback reliable for both linear and tiled RSX
+  targets. v1.30 keeps the allocation's tile base in the transfer source,
+  expresses packed-eye selection through the blitter's source Y coordinate,
+  and drains the 3D backend before the independent 2D engine reads the active
+  surface. This removes the horizontal black/stale scanlines that command
+  ordering alone could leave in captures. RPCS3 produced clean linear, tiled
+  plus Z-cull, and tiled frame-packed top/bottom images. Screenshot readback
+  remains an explicit diagnostic synchronization and adds no normal-frame
+  finish. Tiled targets remain opt-in until a physical-console pass.
+- Add coherent RSX framebuffer capture through a 1 MiB-aligned XDR staging
+  surface. The renderer now orders a local-to-main surface blit after queued
+  draws, invalidates the PPU cache before DMA, and reads the completed staging
+  copy. This exposed that the older direct PPU reads of RSX-local scanout memory
+  were black and therefore could not serve as image-fidelity comparisons.
+- Reconcile Quake II's polygon winding with native RSX hardware face culling.
+  An exhaustive framebuffer matrix identified direct GL FRONT/BACK mapping
+  with `GCM_FRONTFACE_CCW` as the correct convention; the opposite equivalence
+  class rejected almost the entire world. v1.29 enables the verified mapping by
+  default. RPCS3 gameplay captures passed normal and left-handed weapon cull
+  switches, camera movement, and both frame-packed stereo eyes with complete
+  scenes and no normal-frame GPU-wide finishes. Session-only
+  `ps3_rsx_hw_cull_mode 0` retains the v1.28 suppression path for recovery;
+  modes 2 through 4 remain diagnostic mappings.
+- Finish the frame-packed stereo correction: widen GL1's CPU side planes by the
+  exact asymmetric projection offset, clear normally unused eye pixels to black,
+  and copy only the selected 720-line eye during screenshots. RPCS3 advertised
+  the native 1280x1470 mode and rendered two complete, distinct eyes with no
+  stale menu/weapon imagery or magenta edge gaps. Stereo still forces VSync so
+  each top/bottom pair is presented atomically.
+- Keep `ps3_rsx_tiled_targets` disabled by default. RPCS3 reaches `base1` with
+  tiled color/depth targets and Z-cull active, but the current screenshot blit
+  does not detile that optional surface correctly; use the linear default for
+  reliable capture and physical validation.
+- Reuse native dynamic-texture allocations before their first sample in the
+  current frame. `ps3_rsx_texture_frame_reuse 1` tracks the exact RSX pointer
+  and frame serial, updates idle lightmap storage in place after the preceding
+  flip fence, and retains copy-on-update renaming as soon as that allocation
+  has entered a draw. Set it to `0` to restore v1.26's always-rename diagnostic
+  path. Matched 120-frame RPCS3 `base1` runs produced the same draw workload
+  and zero forced GPU finishes; reuse-on handled 87 of 131 updates
+  in place and copied 2,816 KiB through 44 renames, versus 8,576 KiB through
+  134 renames with reuse disabled.
+- Keep native renderer teardown out of the XMB exit path itself. The renderer
+  previously ran its blocking `rsxFinish()` and freed active allocations before
+  `GLimp_Shutdown()` reached the existing process-exit guard, explaining why a
+  menu-first exit could succeed while direct exit from gameplay froze. v1.26
+  now relinquishes those process-owned renderer resources to LV2 as soon as the
+  sysutil callback requests exit; normal `quit` and `vid_restart` still perform
+  complete ordered teardown. Physical validation of direct gameplay exit is
+  still required.
+- Add an optional mapped-main-memory vertex/index stream. Set
+  `ps3_rsx_stream_main_memory 1` and run `vid_restart` to place the 8 MiB vertex
+  and 2 MiB index rings in one 1 MiB-aligned XDR mapping, avoiding PPU writes to
+  RSX-local memory. Submission orders PPU stores, invalidates the RSX vertex
+  cache, and binds both streams from `GCM_LOCATION_CELL`; mapping failure falls
+  back to local memory. The switch is session-only and defaults off for its
+  first hardware pass. Matched 120-frame indexed `base1` RPCS3 runs completed
+  in both locations; normal shutdown also released the 10 MiB I/O mapping.
+- Specialize native RSX client-array packing for the float layouts emitted by
+  the GL1 frontend. This bypasses the generic component type and normalization
+  decoder for the common path while retaining it for unusual or unaligned
+  arrays; `ps3_rsx_fast_arrays 0` selects that fallback at the next frame.
+  RPCS3 exercised the specialized path for every streamed `base1` vertex over
+  120 frames. The final indexed combination packed 406,272 source
+  vertices and emitted 668,514 indices across 3,298 RSX submissions. The
+  generated PPU code uses alignment-safe single-float loads for source array
+  components.
+- Add an optional native tiled-render-target path with RSX tiled color buffers,
+  tiled/compressed Z24S8 storage, and hardware Z-cull metadata. Set
+  `ps3_rsx_tiled_targets 1` and run `vid_restart` to enable it; the linear path
+  remains the default until physical-console validation, and is retained when
+  legacy `gl1_ztrick` requests alternating depth directions. The test switch
+  is session-only so a full relaunch always recovers linear targets. Warm-cache
+  RPCS3 Vulkan A/B runs both rendered `base1` for 120 frames with identical 91,810
+  GL1 draws, 3,331 hardware submissions, 669,342 streamed vertices, and 1,455
+  filtered state calls; the tiled trace reported Z-cull active with no new
+  RSX/Vulkan fault.
+- Fix native frame-packed stereo persistence: acquire the frame on the first
+  eye regardless of separation sign, route top/bottom regions by render-pass
+  order so zero depth remains valid, and color/depth-clear each eye before
+  drawing. Pump the system callback again immediately before presentation so
+  a gameplay Exit Game request cannot queue one more display flip.
+- Batch native triangle fans, strips, and quads with bounded 16-bit RSX index
+  buffers. The `base1` RPCS3 Vulkan comparison streamed 406,734 vertices in
+  indexed mode versus 669,342 through the expanded fallback for the same
+  91,810 GL1 draws and 3,331 hardware submissions, a 39.2 percent reduction.
+  It remains disabled by default for its first physical-console pass; set
+  `ps3_rsx_indexed_batch 1` to enable it at the next frame boundary.
+- Treat an empty Ogg music list as empty instead of reporting every map's CD
+  track as out of range, while retaining track 02 as a valid one-file list.
+- Handle the PS3 XMB Exit Game request through a registered sysutil callback.
+  The main loop and bounded flip wait now pump system callbacks, then shut down
+  configuration, audio, and input in order. The system-exit path deliberately
+  avoids blocking RSX finish/free calls after XMB has reclaimed display flips;
+  normal console `quit` and renderer restarts retain the complete teardown.
+  Returning to the Quake II main menu before XMB Quit Game is the physically
+  confirmed safe workaround; v1.23 also checks the callback before each flip
+  to address direct exit from active gameplay.
+  Keep lifecycle markers in the persistent trace while compiling out obsolete
+  bring-up trace noise.
+- Filter redundant native fixed-function state changes before they reach RSX.
+  Repeated enable/disable, alpha, blend, depth, cull, stencil, raster, viewport,
+  scissor, matrix-load, texture-environment, and sampler setters no longer emit
+  duplicate methods or split a compatible triangle batch. Add opt-in
+  `ps3_rsx_stats 1` telemetry every 120 frames, reporting GL1 API draws, actual
+  RSX draws, batched calls, flushes, streamed vertices, and filtered setters.
+  Set `ps3_rsx_state_filter 0` for the repeated-state diagnostic path.
+- Batch compatible native RSX triangle draws across GL1 world and lightmap
+  surface chains. Triangle fans, strips, quads, and lists are converted to one
+  contiguous triangle stream, while matrix, texture, blend, depth, stencil,
+  raster, clear, stereo-eye, readback, upload, and frame transitions flush the
+  batch before changing state. This removes many small RSX submissions without
+  reordering effects or weakening texture-update fences. Set
+  `ps3_rsx_batch 0` to restore the one-draw-per-call diagnostic path.
+- Make the native RSX Brightness control functional without adding fragment
+  shader work: rebuild a PS3-only gamma table during texture upload and request
+  one full renderer/texture reload when `vid_gamma` changes. Identity gamma
+  remains byte-identical, invalid console values are clamped, and unchanged
+  gamma no longer causes a redundant startup restart.
+- Cache the native RSX shader pair, unchanged MVP constants, and sampler state
+  across GL1 polygon draws. Texture uploads still invalidate RSX before their
+  next sample, and copy-on-update renames still rebind the new local-memory
+  offset, but repeated world polygons no longer emit redundant program,
+  constant, texture-cache, and sampler methods.
+- Expose native RSX non-power-of-two textures and optional anisotropic filtering
+  to the GL1 frontend. World textures now exercise the RSX compatibility layer's
+  CPU-generated mip chains without the legacy 256-pixel rescale/clamp path, and
+  `r_anisotropic` maps 1x-16x requests onto the hardware sampler.
+- Route same-size complete texture redefinitions through the flip-fenced update
+  path, avoiding a full GPU finish and RSX reallocation for every cinematic or
+  scrap-atlas refresh.
+- Make native screenshot readback scale from the active stereo eye rather than
+  sampling across the complete 1470-line frame-packed HDMI surface.
+- Enable the native renderer's dynamic-lightmap texture renaming by default.
+  Copy-on-update removes the per-upload `rsxFinish()` stall, retains superseded
+  RSX allocations until the ordered display flip completes, and bounds retired
+  texture memory to 16 MiB before falling back to one safe GPU synchronization.
+  `ps3_rsx_texture_rename 0` restores fully synchronized uploads. RPCS3 reaches
+  `base1` with native mip sampling and the renamed upload path active. A one-time
+  settings revision migrates the archived v1.13 safety default to the new mode
+  without overriding later user changes.
+- Add native RSX mipmapped textures: retain the level-0 pitch across every
+  linear mip level, track only contiguous uploaded levels, expose the complete
+  chain to RSX, select all OpenGL mip-filter combinations, and open the sampler
+  LOD range beyond level zero. CPU generation also supports the legacy
+  `GL_GENERATE_MIPMAP` path.
+- Enable native RSX HDMI 720p frame-packed stereo after the v1.13 2D baseline
+  passed physical-console gameplay: route the two GL1 eye passes into the top
+  and bottom 720-line regions of one 1280x1470 surface, protect the 30-line HDMI
+  gap with per-eye scissoring, and present only after both eyes are complete.
+- Fix the v1.12 native renderer's first-draw PPU alignment fault: use a
+  naturally aligned 40-byte RSX vertex layout and explicit 32-bit stores while
+  packing CPU client arrays into RSX-local memory.
+- Decode client arrays by their declared byte, short, or float component type
+  and normalize integer colors instead of assuming every element is a packed
+  float vector.
+- Add the v1.11 native RSX safety baseline after a physical-console freeze in
+  v1.10: use a branchless fragment program, pause frame submission after a
+  timed-out display flip, and record first-draw, flip, GPU-finish, and dynamic
+  lightmap stages in the persistent boot trace.
+- Keep RSX-local copy-on-update texture renaming available through
+  `ps3_rsx_texture_rename`; the v1.13 physical baseline used `0` while v1.16
+  advances the fenced path to the default performance mode.
+- Preserve OpenGL texture-environment semantics in the native renderer: apply
+  overbright RGB scaling only to COMBINE lightmap passes and patch fragment
+  constants before binding Cg microcode, as required by the PSL1GHT command
+  ordering used by its RSX samples.
+- Add optional RSX-local texture renaming for dynamic lightmaps. Old allocations
+  remain live until the ordered display flip proves earlier draws are complete,
+  then are recycled at the next frame boundary.
+- Reset the complete native compatibility state across renderer restarts and
+  validate RSX address translation for render targets, shaders, textures, and
+  streamed vertices before submitting their offsets to the GPU.
+- Harden the second native RSX preview for physical-console testing: transpose
+  OpenGL matrices for the Cg/RSX constant layout, restore scissor and depth-range
+  state correctly, and implement the lightmap RGB scale used by the GL1 frontend.
+- Move large GL texture, cinematic, and lightmap scratch arrays out of the small
+  PPU thread stack, and stream draw vertices directly into the RSX arena.
+- Align linear texture pitch for RSX requirements and synchronize dynamic
+  texture updates conservatively so queued world draws cannot see a later
+  lightmap block.
+- Add the first native RSX renderer build: Quake II's established GL1 scene
+  frontend now feeds direct RSX command buffers, Cg vertex/fragment programs,
+  RSX-resident textures, a GPU vertex stream, and hardware depth/stencil,
+  blending, culling, alpha testing, viewport, and scissor state.
+- Keep native RSX behind the `PS3_NATIVE_RSX=1` build switch while hardware
+  validation and remaining renderer fidelity work are in progress.
+- Double-buffer the RSX scanout surfaces and follow the PSL1GHT flip contract:
+  wait for the pending flip, write only to the non-displayed buffer, then queue
+  that completed buffer. This prevents scanout from racing framebuffer writes.
+- Make the Video menu VSync setting control 2D flip mode; frame-packed stereo
+  forces VSync because both eyes must be presented as one synchronized pair.
+- Move the savegame copy buffer out of the PPU stack, fixing a 64 KiB stack
+  overflow after the first map finished spawning but before local connection.
+- Make the PS3 New Game menu launch base1 directly instead of gating gameplay
+  behind the legacy intro cinematic path.
+- Move the CIN decoder's 128 KiB compressed-frame buffer and audio scratch
+  buffer off the constrained PPU main-thread stack.
+- Extend the persistent PS3 trace through server startup, BSP/entity loading,
+  local connection, and client renderer registration.
+- Add optional 1-to-5-worker SPU acceleration for palette conversion, output
+  scaling, and stereoscopic frame packing, with bounded waits and automatic
+  fallback to the existing PPU path.
+- Replace the PS3 loopback-only network placeholder with nonblocking IPv4 UDP,
+  DNS lookup, broadcast discovery, and client/server sockets.
+- Add optional PlayStation Move gyro aiming and button input through PSL1GHT
+  libgem, with runtime sensitivity, smoothing, and dead-zone controls.
+- Add optional HDMI 720p stereoscopic frame-packing output and a runtime depth
+  scaler to the PS3 software renderer.
+- Scale software render modes to the physical PS3 display buffer, including
+  1080p output, and document realistic performance profiles.
+- Use the QUAKE2000 title/application ID and current PSL1GHT video-state API.
+
+Quake II 8.01 to 8.10:
+- The OpenGL 3.2 renderer now supports the classic underwater effect.
+  Until now it was only available in the Software renderer.
+- Add 'ref_gles3', an OpenGL ES 3.0 renderer lib. This is an variant
+  of the OpenGL 3.2 renderer, using OpenGL ES instead of desktop OpenGL.
+  It greatly enhances support for embedded GPUs like the RaspberryPI 4.
+- The Software renderer now supports colored lightning. It can be
+  enabled through `sw_colorlight`. (by 0lvin)
+- Another round of timing fixes. Implement `cl_maxfps -1` (the new
+  default, existing configs are not altered) to automatically select
+  a known to be good packet framerate depending on the current renderer
+  framerate. This solves some subtile problems with stuttering entities.
+- Greatly improved support for joysticks and controllers. Devices can
+  now be hotplugged at runtime, binding should be portable between
+  differend controllers and there's a new menu for controller bindings.
+  (by Jaime Moreira)
+- Add the `r_2D_unfiltered` and `r_videos_unfiltered` cvars. When
+  enabled 2D elements like the HUD and videos are not filtered, they
+  appear pixeled.
+- Add 'prefweap' command to select weapon by priority. (by Jaime
+  Moreira)
+- Support building with Microsoft Visual Studio 2015 and newer.
+- Several game code fixes, mostly for stuck mechanics in fact2. (by
+  BjossiAlfreds and maraakate)
+- Fix two stuck monsters in hangar1 and jail5. (by Dremor8484 and
+  BjossiAlfreds)
+- Fix the `viewsize` cvar.
+
+Quake II 8.00 to 8.01:
+- Fix the game not starting when nonexistent dirs in the search path.
+- Sync haptic joystick effects to the sound. (by 0lvin)
+- Move several map bug fixes to entity files, add some more map bug
+  fixes. Without entity files the maps are the same as in Vanilla Quake
+  II. (by BjossiAlfreds)
+- Play the correct demo loop after changing the current mod.
+- Fix numbered paks with upper case letters added twice to the search
+  path. Only Windows was affected.
+- `g_footsteps 2` now only generate footstep sound when the player is on
+  the ground entity and no longer when in water or air.
+- Add a cvar `g_machinegun_norecoil' which disables the machinegun
+  recoil effect. This is cheat protected. (by De-Deppe)
+- Scale 8 bit textures when `r_scale8bittextures` is set. (by 0lvin)
+- The game is no longer limited to 1000 FPS when running in timedemo
+  mode. (by 0lvin)
+- Optimise command line parser and fix several subtle bugs. (by
+  BjossiAlfreds)
+- Add `r_2D_unfiltered`, when set to `1` 2D elements aren't filtered.
+- Fix soldiers never chowing their pain skin as long as they're alive.
+- Fix relative paths in ZIP files not being found.
+- Add `gamemode` command for changing between singleplayer, deathmach
+  and coop. (by BjossiAlfreds)
+- Show a download progress bar when `cl_http_show_dw_progress` is set to
+  `1`. (by David Carlier)
+
+Quake II 7.45 to 8.00:
+- Client side support for the optional Vulkan renderer library.
+- Non existent renderer libraries are now skipped over by the menu.
+- Fix several bugs when loading autosaves.
+- Bump the maximal number of OGG/Vorbis files to 128.
+- Several fixes to the Barracuda Shark. (by BjossiAlfreds)
+- 'vid_fullscreen' and 'r_mode' are no longer special, they require an
+  explicit 'vid_restart' like every other cvar.
+- Remove hardcoded map fixes and replace them by optional entity files.
+  Add several newly discovered map fixes. (by BjossiAlfreds)
+- Send the network protocol version to the server. This can be used by
+  the server to support clients with different network protocol version.
+  (by Knightmare)
+- Force SDL to minimize the window when its focus is lost. This fixes
+  several problem under Windows with SDL 2.0.14 and newer.
+- Switch the semantics of the 'vid_fullscreen' cvar. '1' is now native
+  fullscreen, like it was in Vanilla Quake II. '2' is desktop
+  fullscreen. When desktop fullscreen is selected through the menu,
+  'r_mode' is forced to '-2'.
+- Add 'g_footsteps' to control the generation of footstep sound. This
+  cvar is cheat protected. '1' is Vanilla Quake II behavior and the
+  default. '0' never generates footstep sound, '2' always generates
+  them.
+- Support stereo wave files. (by 0lvin)
+- Add 'cl_r1q2_lighstyle'. When set to '1' Yamagi Quake II uses the
+  Vanilla Quake II light styles (for example yellow light for the
+  Hyperblaster) instead of the default r1q2 light styles.
+- Add a submenu to configure gamepad and joystick sensitivities. (by
+  Larry Davis)
+- Ensure that the config file is written before changing the active mod.
+  This prevents config changes from getting lost.
+- Overhaul the search path logic. Make sure that each directory is added
+  only once.
+
+Quake II 7.44 to 7.45:
+- Fix a crash under windows when opening the games menu with mods
+  installed.
+
+Quake II 7.43 to 7.44:
+- Fix some input option not getting saved.
+- Limit busywaits to the full client. This lowers the cpu consumption
+  of q2ded considerably.
+- Rework the build system to be more distribution friendly. The base
+  CFLAGS and LDFLAGS can now be overridden by the environment and by
+  options passed to make. (by Simon McVittie)
+- Fix some corner cases of broken IPv6 connectivity.
+- Fix qport colliding between several Yamagi Quake II clients.
+- Keyboard keys unknown to Yamagi Quake II can now be bound.
+- Adaptive vsync is now supported by setting 'r_vsync' to '1'.
+- Implement 'coop_pickup_weapons'. When set to '1', a weapon may be
+  picked up by coop players if the player doesn't have the weapon in
+  their inventory or no other player has already picked it up.
+- In coop elevators wait for 'coop_elevator_delay' seconds.
+- If 'cl_anglekick' is set '1' angle kicks are ignored. This breaks
+  the gameplay a little bit, but helps against motion sickness. This
+  cvar is cheat protected.
+- Add 'listmaps' command and autocompletion for maps. (by JBerg)
+- Make 'wait' in scripts wait for 17 ms. This fixes some movement
+  makros.
+- Support for Haiku. (by David Carlier)
+- Add a 'mods' submenu. (by earth-metal)
+- Add the 'vstr' command and 'nextdemo' cvar. Ported from ioquake3.
+  (by Denis Pauk)
+
+Quake II 7.42 to 7.43:
+- Recover from a lost sound device, do not crash of no sound device is
+  available. This fixes several problem with DisplayPort and HDMI audio,
+  especially with the Intel Windows GPU drivers.
+- Several small game logic fixes. This includes a fix for a potential
+  progress blocker in 'The Torture Chambers' introduced in the last
+  release. (by BjossiAlfreds)
+- Add the 'gl1_particle_square' cvar, it forces square particles in
+  the GL1 renderer. (by Mason UnixBeard)
+- The software renderer is no longer experimental.
+- Add an option to configure the gun Z offset in the software renderer.
+
+Quake II 7.41 to 7.42:
+- The console can now be scrolled with the mouse wheel. (by maxcrofts)
+- Fix entities on non-horizontal surfaces rendered in full black.
+- Add an option to choose the display Quake II runs on. (by Spirrwell)
+- Add an option to specify the display refresh rate used in fullscreen.
+- Allow mouse 'sensitivity' to be set to non-integral values.
+- Port cvar operations from q2pro. These allow the manipulation of cvar
+  values, supported are: dec, inc, reset, resetall and toggle
+- Put the client into pause mode during savegame load. This prevents the
+  world getting forwarded about 100 frames during load, time in which
+  the player might be hurt by monsters or the environment.
+- New commands: 'listentities' allows listing of entities. 'teleport'
+  teleports the player to the given coordinates.
+- Fix loading of config files not ending in newlines.
+- A lot of fixes for subtle, long standing AI and game play bugs. (by
+  BjossiAlfreds)
+- Quicksaves can now be loaded and saved throught the savegame menus.
+- The software renderer now skips frames with no changes. This improves
+  performance quite a bit, especially on slow CPUs. (by Denis Pauk)
+
+Quake II 7.40 to 7.41:
+- Some bugfixes to HTTP downloads introduced in 7.40.
+- Fix several crashes when loading savegames in coop.
+- Fix some out of memory aborts when loading maps with a lot surfaces.
+- Allow autodetection of the desktop resolution. Set 'r_mode' to '-2' to
+  enable that. (by Denis Pauk)
+- Several fixes to the OpenGL 3.2 renderer. Some dynamic lights were
+  missing, for example for most explosions. Stencil shadows were broken
+  under some conditions. Performance was bad with the AMD driver under
+  Windows. Intel Ivy Bridge didn't work. Under some conditions lights
+  were too bright.
+- Add an optional fix for lighting problems in maps that misuse sky
+  surfaces for interior lighting. Set 'gl_fixsurfsky' to '1' to enable
+  it.
+- Another bunch of timing fixes. The game should now hold the framerate
+  under all conditions, even with crappy Windows GPU drivers.
+- The quake2.exe wrapper forces the Quake II window into focus. This
+  prevents Quake II starting in background.
+
+Quake II 7.30 to 7.40:
+- Add support for HTTP downloads. Both the r1q2 and q2pro URL schemes
+  are supported, if a file is unavailable over HTTP the download code
+  falls back to UDP.
+- Savegames can be removed through the menu by pressing 'del' on the
+  selected savegame. (by Jonathan Bergeron)
+- Support external entity files. This was submitted by @NeonKnightOA.
+- Some fixes to OGG/Vorbis music playback. The music keeps playing after
+  s_restart and ogg_shuffle is handled correctly by the menu.
+- Another round of timing fixes. Average frame times are now taken into
+  account when taking an educated guess on the next frames render time.
+  And the display refresh rate detection no longer cripple working GPU
+  drivers in an efford to work around bugs in older version of AMDs.
+- A lot of fixes to the internal memory management. The game is now
+  much more memory efficient, this allows playing of extremly big maps
+  without crashes. This is largly based upon work done by Denis Pauk.
+- New and much more detailed documentation.
+- Enhancements to the software renderer. Retexturing packs are now
+  supported, general cleanup and bugfixes. (by Denis Pauk)
+
+Quake II 7.21 to 7.30:
+- Removed support for SDL 1.2.
+- Removed static dependencies to libogg, libvorbis and libz.
+- Fixed several bugs regarding render- and fullscreen switch.
+- A lot of fixes and improvements to the software renderer. It's now
+  able to render the whole game without artifacts and much faster than
+  before. (by Denis Pauk)
+
+Quake II 7.20 to 7.21:
+- Fix some render glitches in the software renderer. (by Denis Pauk)
+- Render the weapon independent of the current field of view, otherwise
+  the weapon distorts with very high FOV settings. The weapons FOV can
+  be set through r_gunfov, it defaults to 90.
+- Rework the OGG/Vorbis backend. This fixes several annoying bugs, and
+  adds support for alternative track <=> file mappings. Use this to
+  implement support for the audio tracks supplied by the GOG.com version
+  of Quake II.
+
+Quake II 7.10 to 7.20:
+- Add the soft renderer back. This feature is considered experimental.
+  The porting of the old soft renderer code to SDL and it's cleanup
+  were done by Denis Pauk.
+- Rename several cvars to be consistent across different renderers.
+  The configuration file will be converted at the first start, when an
+  old cvar name is used a message is printed.
+- Make the client unicode compatible. Yamagi Quake II can now be 
+  installed into pathes with unicode characters in it. On Windows the
+  user name of the current account may contain unicode characters.
+  As a side effect the game can run on ReFS volumes. While '+set
+  basedir' is still supported, the unicode compatible '-datadir'
+  should be used.
+- Another round of timing fixes. The game is now capable of holding
+  the requestes or vsync framerate even on slow machines and with
+  problematic GL drivers.
+- Fix server side mod handling, their configs are now saved to the
+  correct directories and the configs are reexeced at mod startup.
+
+Quake II 7.02 to 7.10:
+- Joystick support including haptic feedback. This fantastic work was
+  done by Denis Pauk. The dirty work is done by SDL, how good or bad
+  a joystick or gamepad is supported depends on SDLs support for it.
+- Fix the old SDL sound backend, s_openal set to 0 is working again.
+- Fix possible Vorbis buffer underruns if too many sound samples are
+  in flight. This occured only in large multi player games with at
+  least 6 custom models.
+- Fix a possible crash on Windows if MSAA was set to a value not
+  supported by the driver.
+- It's now possible to play through the whole game on a Raspberry PI
+  and other ARM boards. Please note that the RPIs hardware is really
+  limited. Only the OpenGL 1.4 renderer is supported and the framerate
+  is highly dependend on the screen resolution.
+
+Quake II 7.01 to 7.02:
+- Fix several corner cases regarding render library loading. The game
+  should now always fall back to the OpenGL 1.4 renderer if the new
+  OpenGL 3.2 renderer can't be initialized. Also the game aborts if no
+  useable OpenGL implementation exists.
+- Refactor the search path code. This should fix several bugs with
+  Quake II writing to the wrong directories or being unable to find
+  some / all assets.
+- Reimplement portable binaries. If called with the -portable command
+  line option Quake II saves all data (configs, savegames, screenshorts
+  etc.) into it's systemwide installation directory and not users home
+  directory. In contrast to the old implementation on Windows stdout.txt
+  contains all output, the first lines are no longer missing.
+- vid_fullscreen set to 1 now keeps the desktops resolution. Set it to 2
+  to change the resolution.
+- Instead of a list with precalculated FOV values the video menu now
+  shows a slider with possible values from 60 to 120. Horplus is now
+  always enabled, set the horplus cvar to 0 to disable it.
+- The game is now able to hold the requested framerate (either by the
+  vsync or the gl_maxfps cvar) with an accuracy of about +/- 1% as long
+  as the hardware is fast enough.  The framecounter was reimplemented
+  to be much more precise.
+- Fix misspredictions if an original client running on Win32 connects
+  to a Yamagi Quake II server running on Linux/i386.
+
+Quake II 7.00 to 7.01:
+- Fix build of GL3 for platforms without SSE.
+- Fix Jennel Jaquays name in credits and quit screen.
+- Make Quake II high DPI aware on Window Vista and above.
+- Fix some problems with loading dependend librarys on Windows.
+
+Quake II 6.00 to 7.00:
+- Remove the broken multitexturing render path from the OpenGL 1.4
+  renderer. It was switched off by default in 6.00.
+- Reimplement the support for shared renderer libraries. Please note
+  the this is an incompatible implementation with an custom API. The
+  original renderer libraries will not work!
+- Implement an OpenGL 3.2 renderer. This renderer has the same look
+  and feel as the old OpenGL 1.4 renderer but makes heavy use of
+  modern OpenGL and GPU features. An OpenGL 3.2 capable GPU (Intel
+  starting with Ivy Bridge on Windows or Sandy Bridge on Linux, Nvidia
+  staring with G80 and AMD starting with R600 / HD2000) is required.
+- Fix OpenAL compatibility with modern openal-soft versions.
+- Several fixes and optimizations to OpenAL, implement support for
+  doppler effects. (by xorw)
+
+Quake II 5.34 to 6.00:
+- Make the client asynchronous. The old behaviour can be forced by
+  setting cl_async to 0. Please note that asynchronicity can lead to
+  problems if the old SDL 1.2 backend is used and vsync is enabled.
+- Implement gl_overbrightbits in the non multitexturing case.  A value
+  of 1 just fixes lighting on water surfaces, higher values increase
+  the brightness of everything.
+- General renderer overhaul for better compatibility with modern GPUs.
+  OpenGL 1.4 is now required, older versions are no longer supported.
+  Multitexturing was deprecated and will be removed in a future release.
+- Fix some longstanding AI problems.
+- Several general gameplay fixes.
+
+Quake II 5.33 to 5.34:
+- Add support for stereo 3D (by Valery Guskov)
+- Make gibt solid so they move with conveyor belts.
+- Disable gl_ext_multitexturing by default.
+- Switch from an arch whitelist to an "all archs are supported"
+  approach.
+- Add a new README.
+
+Quake II 5.32 to 5.33:
+- Add OGG volume slider in settings menu
+- Fixed some bugs in volume settings
+- Replaced HUD scale option in video menu with generic UI scale
+- General UI upscaling improvements
+- Better support for keyboards with AZERTY layout
+
+Quake II 5.31 to 5.32:
+- Fix problems with never openal-soft versions.
+- Fix overbright bits not applied to regular meshes. (by David Reid)
+- Several improvements to GUI / HUD scaling. (by David Reid)
+- Don't stop generating gibs after map change.
+- A new high resolution application / windows icon. (by Ryan)
+- Don't display baseq2 savegames in mods / addons.
+- Some smaller bugfixes.
+
+Quake II 5.30 to 5.31:
+- Enabled hud scaling by default and added an option to the video menu
+  to switch scaling off.
+- Fixed animated textures on transparent surfaces.
+- Added CMake as an optional build system.
+- Implemented a persistent console history. (by caedes)
+- Fix bug with high velocities in vents in 32bit builds.
+- A lot of small fixes and changes. (by Ozkan Sezer)
+
+Quake II 5.24 to 5.30:
+- Support for Mac OS X was overhauled. (by Jarvik7)
+- Overhauled retexturing support, replacing libjpeg with stb_image,
+  adding png support because it was so easy (by caedes).
+- Fix gamma (was broken in last release)
+- Fix mouse grabbing (again!)
+- Add binary directory to game data path
+
+Quake II 5.23 to 5.24:
+- Fix keyboard layouts in the console.
+- Use GL_ARB_texture_non_power_of_two if it's supported by the GPU.
+- Provide gl_consolescale and gl_menuscale cvars to change the scale
+  of the console and the menu.
+- Several bugfixes and improvements to the sound system.  Some bugs
+  were fixed and the underwater effect is now supported in the SDL
+backend. (by bibendovsky)
+
+Quake II 5.22 to 5.23:
+- Provide gl_hudscale cvar that can be changed to scale the HUD, for
+  high resolutions etc. (by caedes)
+- Several menu improvements.
+- A better work around for the "the mouse cursor hits the window
+  border" SDL2 problem.
+
+Quake II 5.21 to 5.22:
+- Provide a fallback if SDL2s relative mouse mode cannot be activated.
+- Add support for MSAA through the gl_msaa_samples cvar.
+
+Quake II 5.20 to 5.21:
+- Fix a bug regaring mouse key handling (reported by phenixia2003)
+- Correct MS Windows builds. Add official support for Win64. This
+  still needs some testing.
+- Allow to shutdown the client by pressing ctrl-c or sending SIGTERM.
+  Unix / Linux only.
+
+Quake II 5.11 to 5.20
+- Integrate the refresher into the client and remove QGL. This means
+  that ref_gl.so is gone and libGL is now linked like every other lib.
+  (by Alejandro Ricoveri)
+- Port the client to SDL 2.0. The newer SDL version solves some long
+  standing problems, like broken keyboard layouts and non working SDL
+  sound on Windows. While SDL 2.0 is enabled by default, one can switch
+  back to SDL 1.2 by editing the Makefile.
+- OS X support was put to hold. While OS X support is nice to have,
+  non of the deveolpers has interest in maintaining it. Until someone
+  steps up and takes responsibility, no OS X versions will be released.
+
+Quake II 5.10 to 5.11
+- A lot of bugfixes.
+- Videos are scaled to 4:3 to prevent distortions.
+- Another sound system cleanup.
+
+Quake II 5.00 to 5.10
+- Support for OS X. (by W. Beser)
+- Correct field of view handling (by Ricardo Garci)
+- Many improvements to the mouse release code (by svdijk)
+- Scrolling save / load menus (by svdijk)
+
+Quake II 4.21 to 5.00
+- Backport to Microsoft Windows.
+- Support for OpenBSD. (by Jonathan Gray)
+- Aspect ration can be set via the video menu.
+- A better random number generator.
+- The SDL sound driver is now selectable by "s_sdldriver".
+
+Quake II 4.20 to 4.21
+- Fix several segfaults with OpenAL. (reported by Joran and
+  mxmvasilyev0)
+- Add a file CONTRIBUTE.
+- Some minor changes to the Makefile.
+
+Quake II 4.10 to 4.20
+- Add an options framework to allow disabling most option features
+  (OGG/Vorbis, ZIP file loading, OpenAL, etc) at compile time.
+- Integrate OpenAL support, enabling surround sound and better stereo
+  sound calculations.
+- Enforce the "C" locale to prevent libraries like broken LADSPA
+  plugins to override it and break printf, scanf, etc.
+
+Quake II 4.03 to 4.10
+- Change the behavior of hotkey menus to fix some strange bugs and
+  memory leaks in the menu system.
+- Add the "gl_farsee" cvar. When set to "1" Quake II renders maps up
+  to 4096x4096 units instead of being limited to 2300x2300. The
+  default is "0". (by Richard Allen)
+- Add support for the high resolution retexturing pack.
+- Reenable support for gamma via SDL, since the upstream bug was fixed
+  with SDL 1.2.15. Gamma via X11 can be forced by defining X11GAMMA at
+  compile time.
+- Add support for big endian architectures and enable the build on
+  SPARC64 CPUs. (by Kieron Gillespie)
+
+Quake II 4.02 to 4.03
+- Fix wrong function call in the Quake II file system.
+- Fix gl_ext_multitexture set to 1. (reported by Richard Allen and
+  Lukas Sabota)
+- Print the version number in the window title.
+
+Quake II 4.01 to 4.02
+- Fix a linker problem manifesting only on Ubuntu.
+
+Quake II 4.00 to 4.01
+- Fix a linker problem.
+- Fix a problem with displaying the version number.
+
+Quake II 3.00 to 4.00
+- A major rewrite of the savegame system.
+- Add a crash handler, printing a backtrace on Linux platforms.
+- Add support for system wide installations.
+- ctf was moved into a separate download.
+- All open bugs were fixed.
+- Fix spawnpoint selection if single player maps are loaded via
+  console.
+- Rename ~/.quake2 to ~/.yq2 to ease parallel installation with other
+  Quake II clients.
+- The client does no longer crash if the menu is opened while
+  connecting to remote server.
+- The game code received a code audit and major rework.
+
+Quake II 3.00RC2 to 3.00
+- Improve compatiblity with pulseaudio (by Ozkan Sezer)
+
+Quake II 3.00RC1 to 3.00RC2
+- Many improvements to the OGG/Vorbis support. (by Ozkan Sezer)
+- The map command now works even when a server is running.
+
+Quake II 2.11 to 3.00RC1
+- Complete refactoring and code audit of the client, leading to much
+  cleaner and more maintainable code and improved stability.
+- Fixed a wrong cast under linux. This could result in sudden crashes.
+- Reworked the input system.
+- Much improved console tab completion.
+- Better TTY output of the startup and shutdown.
+- More reliable shutdown of the client.
+- Plugged a memory leak in the quake file system.
+- Major rework of the sound system:
+  - A lot of bugfixes for the upper layer.
+  - Simplified code and removed crap from the 90ies.
+  - Rewrote the low level backend from scratch.
+- Major rework of the refresher:
+  - Added multitexturing and paletted textures back (this was
+    requested by many, many people).
+  - Rewrote the SDL backend.
+  - Reimplemented the gamma control using native X11 calls.  This
+    should fix the gamma for all setups.
+  - Support for overbright bits.
+- Changed the window title to "Yamagi Quake II".
+
+Quake II 2.10 to 2.11
+- Fix a bug in the client. This fixes the strange crashes under
+  Ubuntu. (Reported by many, special thanks to jhansonxi for his help)
+- Add a null pointer check in cl_view.c. This fixes a rare case crash
+  in Ground Zero when files are missing. (by Sascha K.)
+- Add a script as possible work around for Ubuntu bug 32452 (by
+  caedes)
+
+Quake II 2.10RC3 to 2.10:
+- Fix blending
+
+Quake II 2.10RC2 to 2.10RC3:
+- The refresher uses OpenGL 1.4 not 1.0
+- Saner standard configuration
+- Fix a bug when a video follows a video (like in Ground Zero)
+- Fix a crash when enabling OGG/Vorbis in the menu
+- Fix a crash when changing level after deactivating OGG/Vorbis
+  playback
+- Do not show the gun symbol when fov is bigger than 91 and cl_gun is
+  set to 2
+
+Quake II 2.10RC to 2.10RC2:
+- Fix a problem with machine gun soldiers deadlocking
+- Change CFLAGS to a saner default
+- Quake II now creates ~/.quake2 if it doesn't exist (reported by N.
+  Tsakiris)
+- Slightly better game performance (~10 FPS)
+
+Quake II 2.00 to 2.10RC:
+- Automagical releases the mouse when the console is opened
+- Increased the maximal amount of file descriptores from 64 to 256.
+  This should fix some very rare crashes with 'The Reconing' and
+  possible similar problems with mods.  (reported by E. Müller)
+- Support for custom resolutions (by caedes and Yamagi)
+
+Quake II 1.05 to 2.00:
+- Ogg/Vorbis Support as an optional replacement for the CD playback
+- Support for hardware gamma via SDL
+- Support for grabbing the mouse
+- Some bugfixes
+
+Quake II 1.04 to 1.05:
+- Fix slowdown with CD music under Linux (by caedes)
+
+Quake II 1.03 to 1.04:
+- Added icon (by caedes)
+- Added README
+- Removed duplicated file

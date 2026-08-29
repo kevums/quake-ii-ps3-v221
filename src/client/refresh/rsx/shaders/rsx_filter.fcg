@@ -1,0 +1,29 @@
+void main
+(
+	float2 texcoord : TEXCOORD0,
+	uniform float4 filterParams0,
+	uniform float4 filterParams1,
+	out float4 outputColor
+)
+{
+	/* A single multiplicative pass supplies the optional presentation masks.
+	 * filterParams0: physical width, eye height, scanline, RGB grille.
+	 * filterParams1.x: vignette.  Keeping this procedural avoids an extra mask
+	 * texture fetch and lets the Off mode cost no RSX work at all. */
+	float2 pixel = texcoord * filterParams0.xy;
+	float scanPhase = frac(pixel.y * 0.5);
+	float scanMask = 1.0 - filterParams0.z *
+		(1.0 - step(0.5, scanPhase));
+	float grillePhase = frac(pixel.x / 3.0);
+	float3 grille = float3(
+		1.0 - filterParams0.w * step(0.3333333, grillePhase),
+		1.0 - filterParams0.w *
+			(1.0 - step(0.3333333, grillePhase) *
+			step(grillePhase, 0.6666667)),
+		1.0 - filterParams0.w * step(grillePhase, 0.6666667));
+	float2 centered = texcoord * 2.0 - 1.0;
+	float edge = saturate(dot(centered, centered) * 0.5);
+	float vignette = 1.0 - filterParams1.x * edge * edge;
+
+	outputColor = float4(grille * scanMask * vignette, 1.0);
+}

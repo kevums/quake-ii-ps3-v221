@@ -1,0 +1,14 @@
+void main
+(
+	float2 texcoord : TEXCOORD0,
+	float4 vertexColor : COLOR0,
+	uniform sampler2D texture0,
+	out float4 outputColor
+)
+{
+	/* The compatibility layer folds REPLACE and RGB_SCALE into vertex color.
+	 * Keeping this shader branchless avoids changing fragment microcode state
+	 * for every Quake II draw and gives the first hardware baseline the
+	 * smallest possible RSX fragment program. */
+	outputColor = tex2D(texture0, texcoord) * vertexColor;
+}

@@ -1,0 +1,39 @@
+# Local PS3 release payloads. Upload these as private GitHub Release assets,
+# never as ordinary Git objects.
+/release-assets/
+
+# Commercial Quake II data must never be committed.
+*.pak
+baseq2/
+
+# PS3 build products and package staging.
+/build/
+/build-*/
+/dist-*/
+/pkg-root/
+/iso-root/
+/PS3_GAME/
+/*.elf
+/*.self
+/*.pkg
+/*.iso
+*.o
+*.d
+*.map
+*.user
+*.mk
+
+# Generated SPU products.
+/data/ps3_frame_spu.bin
+/src/data/ps3_frame_spu.bin
+/src/client/refresh/soft/spu/build/
+/src/client/refresh/soft/spu/build-*/
+/src/client/refresh/soft/spu/*.elf
+/src/client/refresh/soft/spu/*.elf.map
+
+# Editor and operating-system noise.
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~

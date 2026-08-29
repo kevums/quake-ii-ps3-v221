@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<sfo>
+	<value name="APP_VER" type="string">
+		02.21
+	</value>
+	<value name="ATTRIBUTE" type="integer">
+		0
+	</value>
+	<value name="BOOTABLE" type="integer">
+		1
+	</value>
+	<value name="CATEGORY" type="string">
+		HG
+	</value>
+	<value name="LICENSE" type="string">
+		Quake II PS3 v2.19 baseline with per-draw scaled-font filtering fallback.
+	</value>
+	<value name="PARENTAL_LEVEL" type="integer">
+		0
+	</value>
+	<value name="PS3_SYSTEM_VER" type="string">
+		01.8000
+	</value>
+	<value name="RESOLUTION" type="integer">
+		63
+	</value>
+	<value name="SOUND_FORMAT" type="integer">
+		279
+	</value>
+	<value name="TITLE" type="string">
+		Quake II PS3 Native RSX Compatibility Preview
+	</value>
+	<value name="TITLE_ID" type="string">
+		QUAKE2000
+	</value>
+	<value name="VERSION" type="string">
+		02.21
+	</value>
+</sfo>

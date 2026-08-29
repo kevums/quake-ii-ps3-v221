@@ -1,0 +1,16 @@
+void main
+(
+	float2 texcoord : TEXCOORD0,
+	float2 lightcoord : TEXCOORD1,
+	float4 vertexColor : COLOR0,
+	uniform sampler2D texture0,
+	uniform sampler2D lightmap0,
+	out float4 outputColor
+)
+{
+	/* Match the ordinary GL1 base pass followed by ZERO/SRC_COLOR lightmap
+	 * modulation, including overbright scaling carried in vertexColor. */
+	float4 base = tex2D(texture0, texcoord);
+	outputColor = float4(base.rgb * tex2D(lightmap0, lightcoord).rgb *
+		vertexColor.rgb, base.a);
+}

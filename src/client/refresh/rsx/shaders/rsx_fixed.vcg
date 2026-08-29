@@ -1,0 +1,15 @@
+void main
+(
+	float3 vertexPosition : POSITION,
+	float2 vertexTexcoord : TEXCOORD0,
+	float4 vertexColor : COLOR0,
+	uniform float4x4 mvpMatrix,
+	out float4 outputPosition : POSITION,
+	out float2 outputTexcoord : TEXCOORD0,
+	out float4 outputColor : COLOR0
+)
+{
+	outputPosition = mul(mvpMatrix, float4(vertexPosition, 1.0));
+	outputTexcoord = vertexTexcoord;
+	outputColor = vertexColor;
+}

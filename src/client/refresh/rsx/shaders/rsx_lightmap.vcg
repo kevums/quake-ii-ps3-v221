@@ -1,0 +1,18 @@
+void main
+(
+	float3 vertexPosition : POSITION,
+	float2 vertexTexcoord : TEXCOORD0,
+	float4 vertexLightData : TEXCOORD1,
+	uniform float4x4 mvpMatrix,
+	uniform float4 lightScale,
+	out float4 outputPosition : POSITION,
+	out float2 outputTexcoord : TEXCOORD0,
+	out float2 outputLightmap : TEXCOORD1,
+	out float4 outputColor : COLOR0
+)
+{
+	outputPosition = mul(mvpMatrix, float4(vertexPosition, 1.0));
+	outputTexcoord = vertexTexcoord;
+	outputLightmap = vertexLightData.xy;
+	outputColor = float4(lightScale.xyz, 1.0);
+}
